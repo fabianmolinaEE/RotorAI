@@ -1,0 +1,70 @@
+import type {
+  Customer,
+  Invoice,
+  InventoryItem,
+  Lead,
+  Profile,
+  Role,
+  Shop,
+  SubsystemKey,
+  Task,
+  Technician,
+  TimeEntry,
+  Tool,
+  ToolCheckout,
+  Urgency,
+  Vehicle,
+  WorkOrder,
+  WorkOrderStatus,
+} from "./types";
+import { mockDataService } from "./mockDataService";
+
+export interface DataService {
+  getShop(): Promise<Shop>;
+
+  getProfiles(): Promise<Profile[]>;
+  getProfileByRole(role: Role): Promise<Profile | null>;
+
+  getCustomers(): Promise<Customer[]>;
+  getCustomerById(id: string): Promise<Customer | null>;
+
+  getVehicles(): Promise<Vehicle[]>;
+  getVehicleById(id: string): Promise<Vehicle | null>;
+  getVehiclesByCustomer(customerId: string): Promise<Vehicle[]>;
+
+  getTechnicians(): Promise<Technician[]>;
+  getTechnicianById(id: string): Promise<Technician | null>;
+
+  getWorkOrders(): Promise<WorkOrder[]>;
+  getWorkOrderById(id: string): Promise<WorkOrder | null>;
+  getWorkOrdersByTech(technicianId: string): Promise<WorkOrder[]>;
+  getWorkOrdersByCustomer(customerId: string): Promise<WorkOrder[]>;
+  getWorkOrdersByStatus(status: WorkOrderStatus): Promise<WorkOrder[]>;
+
+  getInventory(): Promise<InventoryItem[]>;
+  getTools(): Promise<Tool[]>;
+  getToolCheckouts(): Promise<ToolCheckout[]>;
+  getTimeEntries(): Promise<TimeEntry[]>;
+
+  getInvoices(): Promise<Invoice[]>;
+  getInvoiceById(id: string): Promise<Invoice | null>;
+
+  getLeads(): Promise<Lead[]>;
+  getTasks(): Promise<Task[]>;
+
+  // "AI" features — prefilled for demo, easy to swap to real later.
+  getQuoteScore(workOrderId: string): Promise<number>;
+  getAiUrgencySuggestion(workOrderId: string): Promise<Urgency>;
+  getRecommendedProcedure(subsystemKey: SubsystemKey): Promise<string>;
+}
+
+let service: DataService = mockDataService;
+
+export function getDataService(): DataService {
+  return service;
+}
+
+/** Future hook for swapping to a real backend implementation. */
+export function setDataService(impl: DataService) {
+  service = impl;
+}
