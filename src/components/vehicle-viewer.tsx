@@ -117,6 +117,13 @@ function SubsystemMeshGroup({ subsystem, mode, hovered, onHover, onSubsystemClic
   const config = SUBSYSTEM_GEOM[subsystem.key];
   if (!config) return null;
 
+  // WR-01: reset cursor on unmount so hover state never leaks
+  useEffect(() => {
+    return () => {
+      document.body.style.cursor = "auto";
+    };
+  }, []);
+
   const color = STATUS_COLORS[subsystem.status];
   const emissiveIntensity = STATUS_EMISSIVE_INTENSITY[subsystem.status];
   const isHovered = hovered === subsystem.key;

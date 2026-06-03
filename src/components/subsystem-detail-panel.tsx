@@ -95,11 +95,13 @@ export function SubsystemDetailPanel({ open, onClose, subsystem }: SubsystemDeta
                   REFERENCES
                 </div>
                 <ul className="mt-2 space-y-1">
-                  {subsystem.resources.map((r) => (
+                  {subsystem.resources.filter((r) => /^https?:\/\//.test(r.url)).map((r) => (
                     <li key={r.label}>
                       <a
                         href={r.url}
                         className="text-sm text-primary underline-offset-4 hover:underline"
+                        rel="noopener noreferrer"
+                        target="_blank"
                       >
                         {r.label}
                       </a>

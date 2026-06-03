@@ -51,7 +51,7 @@ function WorkOrderDetail() {
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <Stat label="Quote" value={`$${wo.quoteAmount.toFixed(2)}`} sub={`${wo.laborHours} hr labor · $${wo.partsCost.toFixed(2)} parts`} />
           <Stat label="Quote score" value={`${wo.quoteScore}/100`} sub="reasonableness" />
-          <Stat label="ETA" value={new Date(wo.etaIso).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })} />
+          <Stat label="ETA" value={(() => { const d = new Date(wo.etaIso); return isNaN(d.getTime()) ? "—" : d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }); })()} />
           <Stat label="Affected systems" value={String(affected.length)} sub={`of ${wo.subsystems.length}`} />
         </div>
         <div className="mt-6 overflow-hidden rounded-md border bg-card h-[480px] max-sm:h-[300px]">
