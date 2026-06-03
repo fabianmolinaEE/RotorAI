@@ -24,7 +24,7 @@ export function SubsystemDetailPanel({ open, onClose, subsystem }: SubsystemDeta
       shouldScaleBackground={false}
     >
       <DrawerPortal>
-        <DrawerOverlay className="bg-black/60" />
+        <DrawerOverlay className="bg-black/60" onClick={onClose} />
         <DrawerPrimitive.Content
           className={cn(
             // Mobile: full-width bottom sheet
