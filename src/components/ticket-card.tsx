@@ -1,3 +1,8 @@
+// PERF NOTE (Phase 3): mode="mini" renders one WebGL canvas per card (frameloop="demand",
+// freezes after one frame). Browsers cap WebGL contexts at ~16. Safe here: the Technician
+// grid renders <=3 cards (Luis has 3 WOs) and the Foreman drawer <=3. If a future grid
+// renders >12 TicketCards at once, switch the header to a CSS-only subsystem-dot fallback.
+
 import { Link } from "@tanstack/react-router";
 import { VehicleViewer } from "@/components/vehicle-viewer";
 import { UrgencyBadge } from "@/components/urgency-badge";
