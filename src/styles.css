@@ -62,10 +62,10 @@
 }
 
 :root {
-  --radius: 0.5rem;
+  --radius: 0.75rem;
   --background: oklch(0.995 0 0);
   --foreground: oklch(0.18 0.01 260);
-  --card: oklch(1 0 0);
+  --card: oklch(1 0 0 / 70%);
   --card-foreground: oklch(0.18 0.01 260);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.01 260);
@@ -98,11 +98,11 @@
 }
 
 .dark {
-  --background: oklch(0.16 0.01 260);
+  --background: oklch(0.13 0.012 260);
   --foreground: oklch(0.97 0.005 260);
-  --card: oklch(0.2 0.01 260);
+  --card: oklch(1 0 0 / 10%);
   --card-foreground: oklch(0.97 0.005 260);
-  --popover: oklch(0.2 0.01 260);
+  --popover: oklch(0.18 0.01 260);
   --popover-foreground: oklch(0.97 0.005 260);
   --primary: oklch(0.7 0.17 245);
   --primary-foreground: oklch(0.15 0.01 260);
@@ -130,6 +130,106 @@
   --sidebar-accent-foreground: oklch(0.97 0.005 260);
   --sidebar-border: oklch(1 0 0 / 8%);
   --sidebar-ring: oklch(0.7 0.17 245);
+}
+
+/* ---- Glass tokens (used as var() references, NOT in @theme inline) ---- */
+:root {
+  --glass-bg: oklch(1 0 0 / 70%);
+  --glass-bg-hover: oklch(1 0 0 / 85%);
+  --glass-border: oklch(1 0 0 / 60%);
+  --glass-shadow: 0 4px 16px oklch(0.2 0.01 260 / 12%), 0 1px 4px oklch(0.2 0.01 260 / 8%);
+  --glass-shadow-hover: 0 8px 32px oklch(0.2 0.01 260 / 18%), 0 2px 8px oklch(0.2 0.01 260 / 12%);
+  --glass-blur: blur(12px);
+}
+
+.dark {
+  --glass-bg: oklch(1 0 0 / 8%);
+  --glass-bg-hover: oklch(1 0 0 / 12%);
+  --glass-border: oklch(1 0 0 / 15%);
+  --glass-shadow: 0 8px 32px oklch(0 0 0 / 40%), 0 2px 8px oklch(0 0 0 / 24%);
+  --glass-shadow-hover: 0 16px 48px oklch(0 0 0 / 50%), 0 4px 16px oklch(0 0 0 / 32%);
+  --glass-blur: blur(12px);
+
+  /* Recharts dark mode chart colors */
+  --chart-1: oklch(0.7 0.19 245);
+  --chart-2: oklch(0.75 0.16 162);
+  --chart-3: oklch(0.8 0.16 75);
+  --chart-4: oklch(0.72 0.22 304);
+  --chart-5: oklch(0.72 0.22 16);
+}
+
+/* ---- Page background depth layers ---- */
+.dark body {
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% 40%, oklch(0.22 0.04 245 / 20%) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 60%, oklch(0.18 0.06 280 / 15%) 0%, transparent 60%);
+}
+
+:root body {
+  background-image:
+    radial-gradient(ellipse 100% 50% at 50% 0%, oklch(0.97 0.008 260 / 60%) 0%, transparent 70%);
+}
+
+/* ---- Recharts dark overrides ---- */
+.dark .recharts-cartesian-grid line { stroke: oklch(1 0 0 / 12%); }
+.dark .recharts-text { fill: oklch(0.65 0.01 260); }
+
+/* ---- Glass card utility + interactive lift ---- */
+@layer components {
+  .glass-card {
+    background-color: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    overflow: hidden;
+    transition: box-shadow 200ms ease, background-color 200ms ease, transform 200ms ease;
+  }
+
+  .glass-card-interactive:hover {
+    background-color: var(--glass-bg-hover);
+    box-shadow: var(--glass-shadow-hover);
+    transform: translateY(-2px);
+  }
+}
+
+/* ---- Landing page race stripes + car animation ---- */
+@keyframes stripe-scroll {
+  from { background-position: 0 0; }
+  to { background-position: 64px 64px; }
+}
+
+@keyframes car-drive {
+  from { transform: translateX(-220px); }
+  to { transform: translateX(calc(100vw + 220px)); }
+}
+
+@layer components {
+  .race-stripes {
+    background-image: repeating-linear-gradient(
+      45deg,
+      oklch(0.2 0.01 260 / 4%) 0px,
+      oklch(0.2 0.01 260 / 4%) 2px,
+      transparent 2px,
+      transparent 32px
+    );
+    animation: stripe-scroll 3s linear infinite;
+  }
+
+  .dark .race-stripes {
+    background-image: repeating-linear-gradient(
+      45deg,
+      oklch(1 0 0 / 4%) 0px,
+      oklch(1 0 0 / 4%) 2px,
+      transparent 2px,
+      transparent 32px
+    );
+  }
+
+  .car-animate {
+    animation: car-drive 14s linear infinite;
+    animation-delay: 0.5s;
+  }
 }
 
 @layer base {

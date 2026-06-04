@@ -16,9 +16,9 @@ function InvoicesList() {
 
   return (
     <PageShell title="Invoices" description={`${invoices.length} on file`}>
-      <div className="overflow-hidden rounded-md border">
+      <div className="overflow-hidden rounded-2xl glass-card">
         <table className="w-full text-sm">
-          <thead className="border-b bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
+          <thead className="border-b bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
             <tr><th className="px-3 py-2 font-medium">#</th><th className="px-3 py-2 font-medium">Customer</th><th className="px-3 py-2 font-medium">Issued</th><th className="px-3 py-2 font-medium">Status</th><th className="px-3 py-2 text-right font-medium">Total</th></tr>
           </thead>
           <tbody>

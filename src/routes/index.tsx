@@ -47,6 +47,12 @@ function Landing() {
   const heroId = "wo_001";
 
   const active = wos.filter((w) => w.status !== "completed" && w.status !== "invoiced").length;
+  const roleCards = [
+    { label: "Owner", to: "/owner", body: "P&L, capacity, lead pipeline.", accent: "oklch(0.62 0.18 245)" },
+    { label: "Manager", to: "/manager", body: "Today's bay, tasks, intake.", accent: "oklch(0.6 0.18 290)" },
+    { label: "Technician", to: "/tech", body: "Your tickets, your tools, your time.", accent: "oklch(0.72 0.16 75)" },
+    { label: "Customer", to: "/portal", body: "Your car, plain English.", accent: "oklch(0.62 0.18 162)" },
+  ];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -74,8 +80,16 @@ function Landing() {
       </header>
 
       {/* HERO */}
-      <section className="border-b">
-        <div className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+      <section className="relative overflow-hidden border-b">
+        <div className="race-stripes absolute inset-0 pointer-events-none" aria-hidden="true" />
+        <div className="absolute bottom-8 left-0 right-0 overflow-hidden pointer-events-none" aria-hidden="true">
+          <svg className="car-animate h-16 w-auto" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 55 L30 30 L70 20 L130 20 L155 30 L180 52 L190 55 Z" fill="currentColor" opacity="0.07" />
+            <path d="M150 55 a18 18 0 0 1 36 0" fill="currentColor" opacity="0.07" />
+            <path d="M24 55 a18 18 0 0 1 36 0" fill="currentColor" opacity="0.07" />
+          </svg>
+        </div>
+        <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 md:py-32">
           <div className="max-w-3xl">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border bg-muted/40 px-3 py-1 text-xs text-muted-foreground">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
@@ -151,7 +165,7 @@ function Landing() {
           </div>
           <div className="mt-12 grid gap-px overflow-hidden rounded-lg border bg-border md:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f) => (
-              <div key={f.title} className="bg-background p-6">
+              <div key={f.title} className="glass-card glass-card-interactive rounded-2xl p-6">
                 <f.icon className="h-5 w-5 text-primary" />
                 <h3 className="mt-4 text-sm font-semibold tracking-tight">{f.title}</h3>
                 <p className="mt-1.5 text-sm text-muted-foreground">{f.body}</p>
@@ -169,16 +183,12 @@ function Landing() {
             <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">Switch perspectives instantly.</h2>
           </div>
           <div className="mt-10 grid gap-3 md:grid-cols-4">
-            {[
-              { label: "Owner", to: "/owner", body: "P&L, capacity, lead pipeline." },
-              { label: "Manager", to: "/manager", body: "Today's bay, tasks, intake." },
-              { label: "Technician", to: "/tech", body: "Your tickets, your tools, your time." },
-              { label: "Customer", to: "/portal", body: "Your car, plain English." },
-            ].map((r) => (
+            {roleCards.map((r) => (
               <Link
                 key={r.label}
                 to={r.to}
-                className="group rounded-md border bg-card p-5 transition-colors hover:border-primary/50"
+                className="group rounded-2xl glass-card glass-card-interactive border-t-2 p-5"
+                style={{ borderTopColor: r.accent }}
               >
                 <div className="text-sm font-semibold tracking-tight">{r.label}</div>
                 <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>

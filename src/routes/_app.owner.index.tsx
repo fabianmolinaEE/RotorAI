@@ -159,7 +159,7 @@ function OverviewSection({
 
       {/* Revenue + Profit charts */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="rounded-md border bg-card p-4">
+        <div className="rounded-2xl glass-card p-4">
           <p className="mb-3 text-sm font-semibold text-muted-foreground">
             Revenue by week
           </p>
@@ -198,7 +198,7 @@ function OverviewSection({
           )}
         </div>
 
-        <div className="rounded-md border bg-card p-4">
+        <div className="rounded-2xl glass-card p-4">
           <p className="mb-3 text-sm font-semibold text-muted-foreground">
             Profit by week
           </p>
@@ -243,9 +243,9 @@ function OverviewSection({
         <h2 className="mb-3 text-lg font-semibold">
           Urgency breakdown this week
         </h2>
-        <div className="overflow-hidden rounded-md border">
+        <div className="overflow-hidden rounded-2xl glass-card">
           <table className="w-full text-sm">
-            <thead className="border-b bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
+            <thead className="border-b bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
               <tr>
                 <th className="px-3 py-2 font-medium">Urgency</th>
                 <th className="px-3 py-2 font-medium">Tickets</th>
@@ -305,9 +305,9 @@ function WorkOrdersSection({ wos }: { wos: WorkOrder[] }) {
   return (
     <div>
       <h2 className="mb-3 text-lg font-semibold">Work Orders</h2>
-      <div className="overflow-hidden rounded-md border">
+      <div className="overflow-hidden rounded-2xl glass-card">
         <table className="w-full text-sm">
-          <thead className="border-b bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
+          <thead className="border-b bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
             <tr>
               <th className="px-3 py-2 font-medium">WO #</th>
               <th className="px-3 py-2 font-medium">Vehicle</th>
@@ -347,9 +347,9 @@ function FinanceSection({ invoices }: { invoices: Invoice[] }) {
   return (
     <div>
       <h2 className="mb-3 text-lg font-semibold">Finance</h2>
-      <div className="overflow-hidden rounded-md border">
+      <div className="overflow-hidden rounded-2xl glass-card">
         <table className="w-full text-sm">
-          <thead className="border-b bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
+          <thead className="border-b bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
             <tr>
               <th className="px-3 py-2 font-medium">Invoice #</th>
               <th className="px-3 py-2 font-medium">Status</th>
@@ -376,7 +376,7 @@ function FinanceSection({ invoices }: { invoices: Invoice[] }) {
                 </td>
               </tr>
             ))}
-            <tr className="border-t bg-muted/40 font-semibold">
+            <tr className="border-t bg-white/5 font-semibold">
               <td className="px-3 py-2" colSpan={2}>
                 Total
               </td>
@@ -399,9 +399,9 @@ function InventorySection({
   return (
     <div>
       <h2 className="mb-3 text-lg font-semibold">Inventory</h2>
-      <div className="overflow-hidden rounded-md border">
+      <div className="overflow-hidden rounded-2xl glass-card">
         <table className="w-full text-sm">
-          <thead className="border-b bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
+          <thead className="border-b bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
             <tr>
               <th className="px-3 py-2 font-medium">SKU</th>
               <th className="px-3 py-2 font-medium">Name</th>

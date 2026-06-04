@@ -13,9 +13,9 @@ function InventoryList() {
   const { data: items = [] } = useQuery({ queryKey: ["inventory"], queryFn: () => svc.getInventory() });
   return (
     <PageShell title="Inventory" description={`${items.length} SKUs in stock`}>
-      <div className="overflow-hidden rounded-md border">
+      <div className="overflow-hidden rounded-2xl glass-card">
         <table className="w-full text-sm">
-          <thead className="border-b bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
+          <thead className="border-b bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
             <tr><th className="px-3 py-2 font-medium">SKU</th><th className="px-3 py-2 font-medium">Item</th><th className="px-3 py-2 font-medium">Bin</th><th className="px-3 py-2 text-right font-medium">Qty</th><th className="px-3 py-2 text-right font-medium">Cost</th></tr>
           </thead>
           <tbody>

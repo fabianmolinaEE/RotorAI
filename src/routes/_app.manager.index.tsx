@@ -33,9 +33,9 @@ function WoTable({ rows, vById, tById, emptyMessage }: WoTableProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-md border">
+    <div className="overflow-hidden rounded-2xl glass-card">
       <table className="w-full text-sm">
-        <thead className="border-b bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
+        <thead className="border-b bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
           <tr>
             <th className="px-3 py-2 font-medium">WO #</th>
             <th className="px-3 py-2 font-medium">Vehicle</th>
@@ -139,7 +139,7 @@ function ManagerHome() {
             key={t.id}
             type="button"
             onClick={() => setSelectedTech(t)}
-            className="rounded-md border bg-card p-4 text-left hover:bg-accent hover:text-accent-foreground min-h-[44px]"
+            className="rounded-2xl glass-card glass-card-interactive p-4 text-left min-h-[44px]"
           >
             <div className="flex items-center gap-2">
               <span
@@ -190,7 +190,7 @@ function ManagerHome() {
                       {techWos.map((w) => {
                         const v = vById.get(w.vehicleId);
                         return (
-                          <div key={w.id} className="mb-3 rounded-md border bg-card p-4">
+                          <div key={w.id} className="mb-3 rounded-2xl glass-card p-4">
                             <div className="flex items-center justify-between gap-2">
                               <span className="text-sm font-semibold">{w.number}</span>
                               <StatusChip status={w.status} />
@@ -205,7 +205,7 @@ function ManagerHome() {
                           </div>
                         );
                       })}
-                      <div className="mt-4 rounded-md border bg-card p-4 text-sm">
+                      <div className="mt-4 rounded-2xl glass-card p-4 text-sm">
                         Weekly completed:{" "}
                         <span className="font-semibold">{selectedTech.weeklyCompleted}</span>
                       </div>

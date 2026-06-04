@@ -48,9 +48,9 @@ function ServiceAdvisorHome() {
       {queue.length === 0 ? (
         <p className="text-sm text-muted-foreground">No active jobs for today.</p>
       ) : (
-        <div className="overflow-hidden rounded-md border">
+        <div className="overflow-hidden rounded-2xl glass-card">
           <table className="w-full text-sm">
-            <thead className="border-b bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
+            <thead className="border-b bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
               <tr>
                 <th scope="col" className="px-3 py-2 font-medium">Vehicle</th>
                 <th scope="col" className="px-3 py-2 font-medium">Customer</th>

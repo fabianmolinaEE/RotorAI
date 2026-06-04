@@ -12,7 +12,7 @@ const Ctx = createContext<ThemeCtx | null>(null);
 const KEY = "haw.theme";
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("light");
+  const [theme, setThemeState] = useState<Theme>("dark");
 
   useEffect(() => {
     const stored = (typeof localStorage !== "undefined" && localStorage.getItem(KEY)) as Theme | null;

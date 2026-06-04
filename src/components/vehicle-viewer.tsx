@@ -274,17 +274,19 @@ export function VehicleViewer({ subsystems, mode, onSubsystemClick, className }:
   }, []);
 
   if (!mounted) {
-    return <div className={cn("bg-background", className)} aria-hidden />;
+    return <div className={cn("bg-transparent", className)} aria-hidden />;
   }
 
   const mechanicalSubsystems = subsystems.filter((s) => s.key !== "body");
 
   return (
     <div
-      className={cn("relative", className)}
+      className={cn("relative bg-transparent", className)}
       style={mode === "mini" ? { pointerEvents: "none" } : undefined}
     >
       <Canvas
+        gl={{ alpha: true, antialias: true }}
+        style={{ background: "transparent" }}
         frameloop={mode === "mini" ? "demand" : "always"}
         camera={{
           position: mode === "mini" ? [0, 2.0, 5.5] : [0, 2.5, 6],

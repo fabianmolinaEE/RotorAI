@@ -23,7 +23,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b">
+      <SidebarHeader className="border-b border-white/10">
         <div className="flex items-center gap-2 px-2 py-2">
           <div className="h-6 w-6 rounded-sm bg-primary" />
           {!collapsed && (

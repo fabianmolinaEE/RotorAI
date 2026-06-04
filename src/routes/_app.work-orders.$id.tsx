@@ -87,7 +87,7 @@ function WorkOrderDetail() {
           <Stat label="ETA" value={(() => { const d = new Date(wo.etaIso); return isNaN(d.getTime()) ? "—" : d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }); })()} />
           <Stat label="Affected systems" value={String(affected.length)} sub={`of ${wo.subsystems.length}`} />
         </div>
-        <div className="mt-6 overflow-hidden rounded-md border bg-card h-[480px] max-sm:h-[300px]">
+        <div className="mt-6 overflow-hidden rounded-2xl glass-card h-[480px] max-sm:h-[300px]">
           <VehicleViewer
             subsystems={wo.subsystems}
             mode="full"
@@ -95,14 +95,14 @@ function WorkOrderDetail() {
             className="h-full w-full"
           />
         </div>
-        <div className="mt-6 rounded-md border bg-card p-5">
+        <div className="mt-6 rounded-2xl glass-card p-5">
           <h2 className="text-sm font-semibold tracking-tight">Complaint</h2>
           <p className="mt-1 text-sm text-muted-foreground">{wo.complaint}</p>
         </div>
         {affected.length > 0 && (
           <div className="mt-6 space-y-3">
             {affected.map((s) => (
-              <div key={s.key} className="rounded-md border bg-card p-5">
+              <div key={s.key} className="rounded-2xl glass-card p-5">
                 <div className="flex items-center justify-between gap-3">
                   <div className="font-medium">{s.label}</div>
                   <Badge variant={s.status === "fix" ? "destructive" : "outline"} className="uppercase">{s.status}</Badge>
@@ -126,7 +126,7 @@ function WorkOrderDetail() {
         {role === "technician" && (
           <div className="mt-6 space-y-6">
             {/* Subsystem + Ticket Status Controls (TECH-04) */}
-            <div className="rounded-md border bg-card p-5">
+            <div className="rounded-2xl glass-card p-5">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-lg font-semibold">Status Controls</h2>
                 <div className="flex items-center gap-2">
@@ -163,7 +163,7 @@ function WorkOrderDetail() {
             </div>
 
             {/* Overview Note (TECH-07) */}
-            <div className="rounded-md border bg-card p-5">
+            <div className="rounded-2xl glass-card p-5">
               <h2 className="text-lg font-semibold">Overview Note</h2>
               <Textarea
                 rows={3}
@@ -176,7 +176,7 @@ function WorkOrderDetail() {
             </div>
 
             {/* Tool Checkout (TECH-05) */}
-            <div className="rounded-md border bg-card p-5">
+            <div className="rounded-2xl glass-card p-5">
               <h2 className="text-lg font-semibold">Tool Checkout</h2>
               <div className="mt-3 space-y-3">
                 {tools.map((t) => {
@@ -199,7 +199,7 @@ function WorkOrderDetail() {
             </div>
 
             {/* Timekeeping (TECH-06) */}
-            <div className="rounded-md border bg-card p-5">
+            <div className="rounded-2xl glass-card p-5">
               <h2 className="text-lg font-semibold">Timekeeping</h2>
               <div className="mt-3 grid grid-cols-2 gap-3">
                 <Stat label="Today" value={`${fmtHours(todayMinutes)} hr`} />

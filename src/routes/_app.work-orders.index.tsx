@@ -19,9 +19,9 @@ function WorkOrdersList() {
 
   return (
     <PageShell title="Work orders" description={`${wos.length} active and recent tickets`}>
-      <div className="overflow-hidden rounded-md border">
+      <div className="overflow-hidden rounded-2xl glass-card">
         <table className="w-full text-sm">
-          <thead className="border-b bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
+          <thead className="border-b bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
             <tr>
               <th className="px-3 py-2 font-medium">#</th>
               <th className="px-3 py-2 font-medium">Vehicle</th>

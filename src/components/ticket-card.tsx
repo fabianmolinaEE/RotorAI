@@ -17,11 +17,11 @@ export function TicketCard({
   vehicleName?: string;
 }) {
   return (
-    <div className="rounded-md border bg-card hover:shadow-md transition-shadow">
+    <div className="rounded-2xl glass-card glass-card-interactive overflow-hidden">
       <div
         role="img"
         aria-label={`${vehicleName ?? wo.number} subsystem diagram`}
-        className="h-40 overflow-hidden rounded-t-md bg-muted"
+        className="h-40 overflow-hidden rounded-t-2xl bg-muted"
       >
         <VehicleViewer
           subsystems={wo.subsystems}

@@ -32,11 +32,11 @@ function CustomerHome() {
           const vehicleWos = wos.filter((w) => w.vehicleId === v.id);
           return (
             <div key={v.id} className={expanded ? "sm:col-span-2" : ""}>
-              <div className="rounded-md border bg-card">
+              <div className="rounded-2xl glass-card">
                 <div
                   role="img"
                   aria-label={`${v.year} ${v.make} ${v.model} subsystem diagram`}
-                  className="h-40 overflow-hidden rounded-t-md bg-muted"
+                  className="h-40 overflow-hidden rounded-t-2xl bg-muted"
                 >
                   <VehicleViewer
                     subsystems={vehicleWos[0]?.subsystems ?? []}
@@ -119,7 +119,7 @@ function VehicleExpansion({
                   : "Unassigned";
 
                 return (
-                  <div key={wo.id} className="rounded-md border bg-background p-4 space-y-3">
+                  <div key={wo.id} className="rounded-xl glass-card p-4 space-y-3">
                     <div className="flex items-center gap-2">
                       <StatusChip status={wo.status} />
                       <span className="text-sm font-medium">{wo.title}</span>
@@ -213,7 +213,7 @@ function VehicleExpansion({
 
         <TabsContent value="diagnostics" className="mt-4">
           <div className="space-y-3">
-            <div className="rounded-md border bg-background p-4 space-y-2">
+            <div className="rounded-xl glass-card p-4 space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Mileage</span>
                 <span className="text-sm font-medium">{vehicle.mileage.toLocaleString()} mi</span>
