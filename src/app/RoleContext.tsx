@@ -14,7 +14,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const stored = (typeof localStorage !== "undefined" && localStorage.getItem(KEY)) as Role | null;
-    if (stored === "owner" || stored === "manager" || stored === "technician" || stored === "customer") {
+    if (stored === "owner" || stored === "manager" || stored === "service_advisor" || stored === "technician" || stored === "customer") {
       setRoleState(stored);
     }
   }, []);
@@ -40,13 +40,15 @@ export function useRole(): RoleCtx {
 export const roleLandingRoute: Record<Role, string> = {
   owner: "/owner",
   manager: "/manager",
+  service_advisor: "/service-advisor",
   technician: "/tech",
   customer: "/portal",
 };
 
 export const roleLabel: Record<Role, string> = {
-  owner: "Owner",
-  manager: "Manager",
+  owner: "Service Manager",
+  manager: "Foreman",
+  service_advisor: "Service Advisor",
   technician: "Technician",
   customer: "Customer",
 };

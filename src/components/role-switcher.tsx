@@ -9,7 +9,7 @@ import {
 import { roleLabel, roleLandingRoute, useRole } from "@/app/RoleContext";
 import type { Role } from "@/data/types";
 
-const ROLES: Role[] = ["owner", "manager", "technician", "customer"];
+const ROLES: Role[] = ["owner", "manager", "service_advisor", "technician", "customer"];
 
 export function RoleSwitcher() {
   const { role, setRole } = useRole();

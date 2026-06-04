@@ -25,6 +25,7 @@ export const shop: Shop = {
 export const profiles: Profile[] = [
   { id: "p_owner", role: "owner", name: "Frank Delgado", email: "frank@hialeahautoworks.com", avatarColor: "oklch(0.62 0.18 245)" },
   { id: "p_manager", role: "manager", name: "Sandra Pratt", email: "sandra@hialeahautoworks.com", avatarColor: "oklch(0.65 0.16 160)" },
+  { id: "p_sa", role: "service_advisor", name: "Carlos Vega", email: "carlos@hialeahautoworks.com", avatarColor: "oklch(0.68 0.17 290)" },
   { id: "p_tech", role: "technician", name: "Luis Ortega", email: "luis@hialeahautoworks.com", avatarColor: "oklch(0.7 0.17 50)" },
   { id: "p_customer", role: "customer", name: "Maria Reyes", email: "maria.reyes@gmail.com", avatarColor: "oklch(0.65 0.18 330)" },
 ];
@@ -214,10 +215,12 @@ export const leads: Lead[] = [
 ];
 
 export const tasks: Task[] = [
-  { id: "ts_001", title: "Call Maria with brake estimate", assigneeId: "p_manager", dueIso: isoOffset(2), done: false },
+  { id: "ts_001", title: "Call Maria with brake estimate", assigneeId: "p_sa", dueIso: isoOffset(2), done: false },
   { id: "ts_002", title: "Reorder Civic front rotors", assigneeId: "p_manager", dueIso: isoOffset(24), done: false },
   { id: "ts_003", title: "Follow up — Hialeah Dealership lead", assigneeId: "p_owner", dueIso: isoOffset(48), done: false },
   { id: "ts_004", title: "Approve Luis overtime — last week", assigneeId: "p_owner", dueIso: isoOffset(-2), done: true },
   { id: "ts_005", title: "Inspect Civic after road test", assigneeId: "p_tech", dueIso: isoOffset(4), done: false },
   { id: "ts_006", title: "Update bay 3 lift inspection log", assigneeId: "p_manager", dueIso: isoOffset(72), done: false },
+  { id: "ts_007", title: "Send Priya status update — RAV4 parts ETA", assigneeId: "p_sa", dueIso: isoOffset(3), done: false },
+  { id: "ts_008", title: "Confirm wo_008 coolant diagnosis with Marcus", assigneeId: "p_sa", dueIso: isoOffset(5), done: false },
 ];

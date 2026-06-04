@@ -8,6 +8,7 @@ import {
   ClipboardList,
   CalendarClock,
   Sparkles,
+  MessageSquare,
   type LucideIcon,
 } from "lucide-react";
 import type { Role } from "@/data/types";
@@ -42,6 +43,14 @@ const techNav: NavItem[] = [
   { title: "Schedule", url: "/tech", icon: CalendarClock },
 ];
 
+const serviceAdvisorNav: NavItem[] = [
+  { title: "Check-in queue", url: "/service-advisor", icon: LayoutDashboard },
+  { title: "Work orders", url: "/work-orders", icon: Wrench },
+  { title: "Customers", url: "/customers", icon: Users },
+  { title: "Invoices", url: "/invoices", icon: Receipt },
+  { title: "Messages", url: "/service-advisor", icon: MessageSquare },
+];
+
 const customerNav: NavItem[] = [
   { title: "My garage", url: "/portal", icon: Car },
   { title: "Service history", url: "/portal", icon: ClipboardList },
@@ -52,6 +61,7 @@ const customerNav: NavItem[] = [
 export const navByRole: Record<Role, NavItem[]> = {
   owner: ownerNav,
   manager: managerNav,
+  service_advisor: serviceAdvisorNav,
   technician: techNav,
   customer: customerNav,
 };

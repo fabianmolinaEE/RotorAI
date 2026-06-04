@@ -14,6 +14,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppWorkOrdersIndexRouteImport } from './routes/_app.work-orders.index'
 import { Route as AppVehiclesIndexRouteImport } from './routes/_app.vehicles.index'
 import { Route as AppTechIndexRouteImport } from './routes/_app.tech.index'
+import { Route as AppServiceAdvisorIndexRouteImport } from './routes/_app.service-advisor.index'
 import { Route as AppPortalIndexRouteImport } from './routes/_app.portal.index'
 import { Route as AppOwnerIndexRouteImport } from './routes/_app.owner.index'
 import { Route as AppManagerIndexRouteImport } from './routes/_app.manager.index'
@@ -44,6 +45,11 @@ const AppVehiclesIndexRoute = AppVehiclesIndexRouteImport.update({
 const AppTechIndexRoute = AppTechIndexRouteImport.update({
   id: '/tech/',
   path: '/tech/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppServiceAdvisorIndexRoute = AppServiceAdvisorIndexRouteImport.update({
+  id: '/service-advisor/',
+  path: '/service-advisor/',
   getParentRoute: () => AppRoute,
 } as any)
 const AppPortalIndexRoute = AppPortalIndexRouteImport.update({
@@ -91,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/manager/': typeof AppManagerIndexRoute
   '/owner/': typeof AppOwnerIndexRoute
   '/portal/': typeof AppPortalIndexRoute
+  '/service-advisor/': typeof AppServiceAdvisorIndexRoute
   '/tech/': typeof AppTechIndexRoute
   '/vehicles/': typeof AppVehiclesIndexRoute
   '/work-orders/': typeof AppWorkOrdersIndexRoute
@@ -104,6 +111,7 @@ export interface FileRoutesByTo {
   '/manager': typeof AppManagerIndexRoute
   '/owner': typeof AppOwnerIndexRoute
   '/portal': typeof AppPortalIndexRoute
+  '/service-advisor': typeof AppServiceAdvisorIndexRoute
   '/tech': typeof AppTechIndexRoute
   '/vehicles': typeof AppVehiclesIndexRoute
   '/work-orders': typeof AppWorkOrdersIndexRoute
@@ -119,6 +127,7 @@ export interface FileRoutesById {
   '/_app/manager/': typeof AppManagerIndexRoute
   '/_app/owner/': typeof AppOwnerIndexRoute
   '/_app/portal/': typeof AppPortalIndexRoute
+  '/_app/service-advisor/': typeof AppServiceAdvisorIndexRoute
   '/_app/tech/': typeof AppTechIndexRoute
   '/_app/vehicles/': typeof AppVehiclesIndexRoute
   '/_app/work-orders/': typeof AppWorkOrdersIndexRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/manager/'
     | '/owner/'
     | '/portal/'
+    | '/service-advisor/'
     | '/tech/'
     | '/vehicles/'
     | '/work-orders/'
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/manager'
     | '/owner'
     | '/portal'
+    | '/service-advisor'
     | '/tech'
     | '/vehicles'
     | '/work-orders'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/_app/manager/'
     | '/_app/owner/'
     | '/_app/portal/'
+    | '/_app/service-advisor/'
     | '/_app/tech/'
     | '/_app/vehicles/'
     | '/_app/work-orders/'
@@ -206,6 +218,13 @@ declare module '@tanstack/react-router' {
       path: '/tech'
       fullPath: '/tech/'
       preLoaderRoute: typeof AppTechIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/service-advisor/': {
+      id: '/_app/service-advisor/'
+      path: '/service-advisor'
+      fullPath: '/service-advisor/'
+      preLoaderRoute: typeof AppServiceAdvisorIndexRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/portal/': {
@@ -268,6 +287,7 @@ interface AppRouteChildren {
   AppManagerIndexRoute: typeof AppManagerIndexRoute
   AppOwnerIndexRoute: typeof AppOwnerIndexRoute
   AppPortalIndexRoute: typeof AppPortalIndexRoute
+  AppServiceAdvisorIndexRoute: typeof AppServiceAdvisorIndexRoute
   AppTechIndexRoute: typeof AppTechIndexRoute
   AppVehiclesIndexRoute: typeof AppVehiclesIndexRoute
   AppWorkOrdersIndexRoute: typeof AppWorkOrdersIndexRoute
@@ -281,6 +301,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppManagerIndexRoute: AppManagerIndexRoute,
   AppOwnerIndexRoute: AppOwnerIndexRoute,
   AppPortalIndexRoute: AppPortalIndexRoute,
+  AppServiceAdvisorIndexRoute: AppServiceAdvisorIndexRoute,
   AppTechIndexRoute: AppTechIndexRoute,
   AppVehiclesIndexRoute: AppVehiclesIndexRoute,
   AppWorkOrdersIndexRoute: AppWorkOrdersIndexRoute,
@@ -295,3 +316,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
