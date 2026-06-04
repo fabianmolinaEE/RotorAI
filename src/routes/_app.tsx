@@ -3,6 +3,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { RoleSwitcher } from "@/components/role-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { NoteProvider } from "@/components/note-context";
 
 export const Route = createFileRoute("/_app")({
   component: AppLayout,
@@ -25,7 +26,9 @@ function AppLayout() {
             </div>
           </header>
           <main className="flex-1">
-            <Outlet />
+            <NoteProvider>
+              <Outlet />
+            </NoteProvider>
           </main>
         </div>
       </div>
