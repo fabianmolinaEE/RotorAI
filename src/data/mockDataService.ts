@@ -8,6 +8,7 @@ import {
   inventoryGlobalThreshold,
   invoices,
   leads,
+  messageThreads,
   profiles,
   shop,
   serviceHistory,
@@ -93,6 +94,33 @@ export const mockDataService: DataService = {
 
   getInventoryCategoryThresholds: () =>
     ok([...inventoryCategoryThresholds, inventoryGlobalThreshold]),
+
+  // ─── Messaging ──────────────────────────────────────────────────────────────
+  getMessageThreads: () => ok([...messageThreads]),
+  getMessageThreadsByWorkOrder: (workOrderId) =>
+    ok(messageThreads.filter((t) => t.workOrderId === workOrderId)),
+  getMessageThreadsByCustomer: (customerId) =>
+    ok(messageThreads.filter((t) => t.customerId === customerId)),
+  getMessageThreadById: (threadId) =>
+    ok(messageThreads.find((t) => t.id === threadId) ?? null),
+  sendMessage: ({ threadId, authorProfileId, authorName, authorRole, bodyText, aiDrafted = false }) => {
+    const thread = messageThreads.find((t) => t.id === threadId);
+    if (!thread) return Promise.reject(new Error(`Thread ${threadId} not found`));
+    const newMessage = {
+      id: `msg_${Date.now()}`,
+      threadId,
+      authorProfileId,
+      authorName,
+      authorRole,
+      bodyText,
+      sentAtIso: new Date().toISOString(),
+      aiDrafted,
+    };
+    thread.messages.push(newMessage);
+    thread.updatedAtIso = newMessage.sentAtIso;
+    thread.hasUnread = false;
+    return ok({ ...thread, messages: [...thread.messages] });
+  },
 
   getQuoteBreakdown: (workOrderId) =>
     ok(workOrders.find((w) => w.id === workOrderId)?.quoteBreakdown ?? null),

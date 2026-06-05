@@ -284,3 +284,54 @@ export interface Task {
   dueIso: string;
   done: boolean;
 }
+
+// ─── Messaging ────────────────────────────────────────────────────────────────
+
+/**
+ * Thread context type.
+ * - work_order: attached to a specific work order (primary for customer comms)
+ * - direct: direct message between two participants (internal roles)
+ */
+export type MessageThreadType = "work_order" | "direct";
+
+export type NotificationChannel = "in_app" | "email" | "sms";
+
+export interface NotificationPreferences {
+  channels: NotificationChannel[];
+}
+
+export interface MessageParticipant {
+  profileId: string;
+  role: Role;
+  name: string;
+  avatarColor: string;
+  notificationPrefs: NotificationPreferences;
+}
+
+export interface Message {
+  id: string;
+  threadId: string;
+  authorProfileId: string;
+  authorName: string;
+  authorRole: Role;
+  bodyText: string;
+  sentAtIso: string;
+  /** True if this message body was AI-drafted (surfaced for transparency) */
+  aiDrafted: boolean;
+}
+
+export interface MessageThread {
+  id: string;
+  type: MessageThreadType;
+  subject: string;
+  participants: MessageParticipant[];
+  /** Linked context — populated for work_order threads */
+  workOrderId?: string;
+  customerId?: string;
+  vehicleId?: string;
+  messages: Message[];
+  createdAtIso: string;
+  updatedAtIso: string;
+  /** Mock: true if there is at least one unread message in this thread */
+  hasUnread: boolean;
+}
