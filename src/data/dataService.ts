@@ -1,11 +1,14 @@
 import type {
   Customer,
+  CustomerRecommendation,
   Invoice,
   InventoryItem,
   Lead,
   Profile,
+  QuoteBreakdown,
   Role,
   Shop,
+  ServiceHistoryRecord,
   SubsystemKey,
   Task,
   Technician,
@@ -27,6 +30,9 @@ export interface DataService {
 
   getCustomers(): Promise<Customer[]>;
   getCustomerById(id: string): Promise<Customer | null>;
+  getServiceHistoryByCustomer(customerId: string): Promise<ServiceHistoryRecord[]>;
+  getServiceHistoryByVehicle(vehicleId: string): Promise<ServiceHistoryRecord[]>;
+  getCustomerRecommendations(customerId: string): Promise<CustomerRecommendation[]>;
 
   getVehicles(): Promise<Vehicle[]>;
   getVehicleById(id: string): Promise<Vehicle | null>;
@@ -53,7 +59,7 @@ export interface DataService {
   getTasks(): Promise<Task[]>;
 
   // "AI" features — prefilled for demo, easy to swap to real later.
-  getQuoteScore(workOrderId: string): Promise<number>;
+  getQuoteBreakdown(workOrderId: string): Promise<QuoteBreakdown | null>;
   getAiUrgencySuggestion(workOrderId: string): Promise<Urgency>;
   getRecommendedProcedure(subsystemKey: SubsystemKey): Promise<string>;
 }

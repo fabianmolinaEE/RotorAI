@@ -29,7 +29,7 @@ function WorkOrdersList() {
               <th className="px-3 py-2 font-medium">Title</th>
               <th className="px-3 py-2 font-medium">Status</th>
               <th className="px-3 py-2 font-medium">Urgency</th>
-              <th className="px-3 py-2 text-right font-medium">Quote</th>
+              <th className="px-3 py-2 text-right font-medium">Quote total</th>
             </tr>
           </thead>
           <tbody>
@@ -50,7 +50,7 @@ function WorkOrdersList() {
                   <td className="px-3 py-2">
                     <Badge variant={w.urgency === "high" ? "destructive" : "outline"} className="capitalize">{w.urgency}</Badge>
                   </td>
-                  <td className="px-3 py-2 text-right tabular-nums">{w.quoteAmount > 0 ? `$${w.quoteAmount.toFixed(2)}` : "—"}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{w.quoteBreakdown.total > 0 ? `$${w.quoteBreakdown.total.toFixed(2)}` : "—"}</td>
                 </tr>
               );
             })}

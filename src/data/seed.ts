@@ -1,9 +1,11 @@
 import type {
   Customer,
+  CustomerRecommendation,
   Invoice,
   InventoryItem,
   Lead,
   Profile,
+  ServiceHistoryRecord,
   Shop,
   Task,
   Technician,
@@ -38,6 +40,10 @@ export const customers: Customer[] = [
   { id: "c_emma", name: "Emma Lindqvist", email: "emma.l@protonmail.com", phone: "(305) 884-7341", vehicleIds: ["v_mazda3_2022"], since: "2024-02-27" },
 ];
 
+const todayMs = Date.UTC(2026, 5, 2, 14, 30);
+const isoOffset = (deltaHours: number) =>
+  new Date(todayMs + deltaHours * 3600 * 1000).toISOString();
+
 export const vehicles: Vehicle[] = [
   { id: "v_civic_2019", customerId: "c_maria", year: 2019, make: "Honda", model: "Civic", trim: "EX", vin: "2HGFC2F69KH543218", plate: "HJK 4421", mileage: 47832, color: "Silver" },
   { id: "v_f150_2015", customerId: "c_maria", year: 2015, make: "Ford", model: "F-150", trim: "XLT", vin: "1FTEW1EF1FFA22113", plate: "TRQ 8810", mileage: 88214, color: "White" },
@@ -47,15 +53,197 @@ export const vehicles: Vehicle[] = [
   { id: "v_mazda3_2022", customerId: "c_emma", year: 2022, make: "Mazda", model: "Mazda3", trim: "Premium", vin: "JM1BPBJL5N1500214", plate: "EMA 0027", mileage: 21487, color: "Soul Red" },
 ];
 
+export const serviceHistory: ServiceHistoryRecord[] = [
+  {
+    id: "shr_001",
+    customerId: "c_maria",
+    vehicleId: "v_civic_2019",
+    workOrderId: "wo_001",
+    servicedAtIso: isoOffset(-2),
+    mileage: 47832,
+    title: "Front brake inspection and repair",
+    summary: "Front brakes inspected after grinding complaint. Pads and rotors quoted for replacement; ABS warning requires post-repair verification.",
+    shopName: shop.name,
+    technicianName: "Luis Ortega",
+    invoiceTotal: 1247.83,
+    customerNotes: "Brake warning light and grinding noise documented for repair approval.",
+  },
+  {
+    id: "shr_002",
+    customerId: "c_maria",
+    vehicleId: "v_f150_2015",
+    workOrderId: "wo_009",
+    servicedAtIso: isoOffset(-72),
+    mileage: 88102,
+    title: "Spark plug + ignition coil replacement",
+    summary: "Replaced worn ignition components and verified cold idle improved after repair.",
+    shopName: shop.name,
+    technicianName: "Marcus Bell",
+    invoiceTotal: 472.18,
+    customerNotes: "Rough idle concern resolved during road test.",
+  },
+  {
+    id: "shr_003",
+    customerId: "c_maria",
+    vehicleId: "v_civic_2019",
+    servicedAtIso: isoOffset(-240),
+    mileage: 45214,
+    title: "Oil change and multipoint inspection",
+    summary: "Changed oil and filter, topped fluids, inspected tire tread and brakes.",
+    shopName: shop.name,
+    technicianName: "Ana Beltran",
+    invoiceTotal: 86.42,
+    customerNotes: "Next oil service suggested around 50,000 miles.",
+  },
+];
+
+export const customerRecommendations: CustomerRecommendation[] = [
+  {
+    id: "rec_001",
+    customerId: "c_maria",
+    vehicleId: "v_civic_2019",
+    subsystemKey: "engine",
+    title: "Oil check soon",
+    reason: "Based on mileage and the last oil service record, the Civic is approaching the next service window.",
+    dueWindow: "Within 2,000 miles",
+    severity: "medium",
+    status: "new",
+    generatedBy: "ai",
+    createdAtIso: isoOffset(-1),
+  },
+  {
+    id: "rec_002",
+    customerId: "c_maria",
+    vehicleId: "v_civic_2019",
+    subsystemKey: "brakes_front",
+    title: "Approve front brake repair",
+    reason: "Brake pad wear and rotor condition are already documented on the active ticket.",
+    dueWindow: "Before regular driving",
+    severity: "high",
+    status: "new",
+    generatedBy: "advisor",
+    createdAtIso: isoOffset(-2),
+  },
+  {
+    id: "rec_003",
+    customerId: "c_maria",
+    vehicleId: "v_f150_2015",
+    subsystemKey: "suspension_front",
+    title: "New tires soon",
+    reason: "Prior inspection notes show tread nearing the shop's recommended replacement range.",
+    dueWindow: "Next 30-45 days",
+    severity: "medium",
+    status: "new",
+    generatedBy: "ai",
+    createdAtIso: isoOffset(-6),
+  },
+];
+
 export const technicians: Technician[] = [
   { id: "t_luis", profileId: "p_tech", name: "Luis Ortega", specialty: "Brakes & Suspension", clockedIn: true, activeWorkOrderIds: ["wo_001", "wo_004", "wo_007"], weeklyCompleted: 1, certifications: ["ASE A5", "ASE A4"] },
   { id: "t_marcus", profileId: "p_tech_marcus", name: "Marcus Bell", specialty: "Engine & Drivetrain", clockedIn: true, activeWorkOrderIds: ["wo_003", "wo_009"], weeklyCompleted: 3, certifications: ["ASE A1", "ASE A2", "ASE A3"] },
   { id: "t_ana", profileId: "p_tech_ana", name: "Ana Beltran", specialty: "Electrical & Diagnostics", clockedIn: false, activeWorkOrderIds: ["wo_006"], weeklyCompleted: 2, certifications: ["ASE A6", "ASE A8"] },
 ];
 
-const todayMs = Date.UTC(2026, 5, 2, 14, 30);
-const isoOffset = (deltaHours: number) =>
-  new Date(todayMs + deltaHours * 3600 * 1000).toISOString();
+function makeQuoteBreakdown({
+  workOrderId,
+  laborHours,
+  laborRate = 165,
+  partsCost,
+  equipmentCost = 0,
+  shopSupplies = 18,
+  tax = 0,
+  summary,
+  internalNotes,
+}: {
+  workOrderId: string;
+  laborHours: number;
+  laborRate?: number;
+  partsCost: number;
+  equipmentCost?: number;
+  shopSupplies?: number;
+  tax?: number;
+  summary: string;
+  internalNotes?: string;
+}): WorkOrder["quoteBreakdown"] {
+  const lines: WorkOrder["quoteBreakdown"]["lines"] = [];
+
+  if (laborHours > 0) {
+    const total = Number((laborHours * laborRate).toFixed(2));
+    lines.push({
+      id: `${workOrderId}_labor`,
+      category: "labor",
+      label: "Labor",
+      description: `${laborHours} hr shop labor`,
+      quantity: laborHours,
+      unit: "hour",
+      unitCost: laborRate,
+      total,
+      internalNote: "Skill and complexity are reflected in labor time/rate for internal review.",
+      customerVisible: true,
+    });
+  }
+
+  if (partsCost > 0) {
+    lines.push({
+      id: `${workOrderId}_parts`,
+      category: "parts",
+      label: "Parts",
+      description: "Required parts and materials",
+      quantity: 1,
+      unit: "flat",
+      unitCost: partsCost,
+      total: partsCost,
+      customerVisible: true,
+    });
+  }
+
+  if (equipmentCost > 0) {
+    lines.push({
+      id: `${workOrderId}_equipment`,
+      category: "equipment",
+      label: "Equipment",
+      description: "Specialty equipment or diagnostic tooling",
+      quantity: 1,
+      unit: "flat",
+      unitCost: equipmentCost,
+      total: equipmentCost,
+      customerVisible: false,
+    });
+  }
+
+  if (shopSupplies > 0 && (laborHours > 0 || partsCost > 0)) {
+    lines.push({
+      id: `${workOrderId}_supplies`,
+      category: "shop_supplies",
+      label: "Shop supplies",
+      description: "Fluids, cleaners, disposal, and bay supplies",
+      quantity: 1,
+      unit: "flat",
+      unitCost: shopSupplies,
+      total: shopSupplies,
+      customerVisible: true,
+    });
+  }
+
+  const subtotal = Number(lines.reduce((sum, line) => sum + line.total, 0).toFixed(2));
+  const totalTax = Math.max(0, Number(tax.toFixed(2)));
+  const total = Number((subtotal + totalTax).toFixed(2));
+
+  return {
+    id: `qb_${workOrderId}`,
+    workOrderId,
+    status: total > 0 ? "ready" : "draft",
+    generatedBy: "advisor",
+    customerSummary: summary,
+    customerDetailAvailable: true,
+    internalNotes,
+    lines,
+    subtotal,
+    tax: totalTax,
+    total,
+  };
+}
 
 export const workOrders: WorkOrder[] = [
   {
@@ -104,23 +292,32 @@ export const workOrders: WorkOrder[] = [
       { key: "body", label: "Body", status: "ok", tools: [], timeEstimateMin: 0, procedure: "", resources: [] },
     ],
     quoteAmount: 1247.83,
-    quoteScore: 72,
+    quoteBreakdown: makeQuoteBreakdown({
+      workOrderId: "wo_001",
+      laborHours: 2.25,
+      partsCost: 487.12,
+      equipmentCost: 58,
+      shopSupplies: 32,
+      tax: 299.46,
+      summary: "Front brake repair estimate including labor, brake parts, shop supplies, and taxes.",
+      internalNotes: "Brake complexity includes ABS warning verification and post-repair road test.",
+    }),
     laborHours: 2.25,
     partsCost: 487.12,
     etaIso: isoOffset(25),
     createdAtIso: isoOffset(-44),
     updatedAtIso: isoOffset(-2),
   },
-  { id: "wo_002", number: "WO-2872", vehicleId: "v_f150_2015", customerId: "c_maria", technicianId: null, status: "scheduled", urgency: "normal", aiUrgency: "normal", title: "60k mile service + tire rotation", complaint: "Due for major service interval.", subsystems: [], quoteAmount: 612.40, quoteScore: 88, laborHours: 1.8, partsCost: 214.5, etaIso: isoOffset(72), createdAtIso: isoOffset(-12), updatedAtIso: isoOffset(-12) },
-  { id: "wo_003", number: "WO-2873", vehicleId: "v_camry_2020", customerId: "c_jamal", technicianId: "t_marcus", status: "in_progress", urgency: "normal", aiUrgency: "normal", title: "Check engine light - P0420", complaint: "CEL on for two weeks, no driveability issue.", subsystems: [], quoteAmount: 894.17, quoteScore: 64, laborHours: 3.1, partsCost: 421.0, etaIso: isoOffset(28), createdAtIso: isoOffset(-30), updatedAtIso: isoOffset(-3) },
-  { id: "wo_004", number: "WO-2874", vehicleId: "v_rav4_2021", customerId: "c_priya", technicianId: "t_luis", status: "awaiting_parts", urgency: "low", aiUrgency: "low", title: "Rear strut replacement", complaint: "Knocking over bumps, left rear.", subsystems: [], quoteAmount: 728.92, quoteScore: 81, laborHours: 2.4, partsCost: 312.18, etaIso: isoOffset(120), createdAtIso: isoOffset(-60), updatedAtIso: isoOffset(-18) },
-  { id: "wo_005", number: "WO-2870", vehicleId: "v_silverado_2017", customerId: "c_diego", technicianId: "t_marcus", status: "completed", urgency: "normal", aiUrgency: "normal", title: "Transmission fluid + filter service", complaint: "Scheduled maintenance, 100k miles.", subsystems: [], quoteAmount: 384.66, quoteScore: 92, laborHours: 1.2, partsCost: 142.4, etaIso: isoOffset(-8), createdAtIso: isoOffset(-30), updatedAtIso: isoOffset(-8) },
-  { id: "wo_006", number: "WO-2869", vehicleId: "v_mazda3_2022", customerId: "c_emma", technicianId: "t_ana", status: "invoiced", urgency: "low", aiUrgency: "low", title: "Battery replacement under warranty", complaint: "Slow crank on cold mornings.", subsystems: [], quoteAmount: 218.31, quoteScore: 95, laborHours: 0.4, partsCost: 0, etaIso: isoOffset(-26), createdAtIso: isoOffset(-50), updatedAtIso: isoOffset(-24) },
-  { id: "wo_007", number: "WO-2875", vehicleId: "v_camry_2020", customerId: "c_jamal", technicianId: "t_luis", status: "new", urgency: "normal", aiUrgency: "high", title: "Steering vibration above 60mph", complaint: "Wheel shimmies on highway.", subsystems: [], quoteAmount: 0, quoteScore: 0, laborHours: 0, partsCost: 0, etaIso: isoOffset(48), createdAtIso: isoOffset(-3), updatedAtIso: isoOffset(-3) },
-  { id: "wo_008", number: "WO-2868", vehicleId: "v_silverado_2017", customerId: "c_diego", technicianId: null, status: "new", urgency: "high", aiUrgency: "high", title: "Coolant leak, overheating", complaint: "Steam from hood on the way in.", subsystems: [], quoteAmount: 0, quoteScore: 0, laborHours: 0, partsCost: 0, etaIso: isoOffset(20), createdAtIso: isoOffset(-1), updatedAtIso: isoOffset(-1) },
-  { id: "wo_009", number: "WO-2867", vehicleId: "v_f150_2015", customerId: "c_maria", technicianId: "t_marcus", status: "completed", urgency: "normal", aiUrgency: "normal", title: "Spark plug + ignition coil replacement", complaint: "Rough idle when cold.", subsystems: [], quoteAmount: 472.18, quoteScore: 89, laborHours: 1.6, partsCost: 198.42, etaIso: isoOffset(-72), createdAtIso: isoOffset(-100), updatedAtIso: isoOffset(-72) },
-  { id: "wo_010", number: "WO-2866", vehicleId: "v_rav4_2021", customerId: "c_priya", technicianId: "t_ana", status: "invoiced", urgency: "low", aiUrgency: "low", title: "Cabin air filter + alignment check", complaint: "Pulls slightly right.", subsystems: [], quoteAmount: 167.44, quoteScore: 93, laborHours: 0.8, partsCost: 38.9, etaIso: isoOffset(-96), createdAtIso: isoOffset(-120), updatedAtIso: isoOffset(-96) },
-  { id: "wo_011", number: "WO-2865", vehicleId: "v_mazda3_2022", customerId: "c_emma", technicianId: "t_luis", status: "scheduled", urgency: "low", aiUrgency: "low", title: "Brake fluid flush", complaint: "Maintenance interval reached.", subsystems: [], quoteAmount: 142.7, quoteScore: 90, laborHours: 0.6, partsCost: 22.4, etaIso: isoOffset(60), createdAtIso: isoOffset(-6), updatedAtIso: isoOffset(-6) },
+  { id: "wo_002", number: "WO-2872", vehicleId: "v_f150_2015", customerId: "c_maria", technicianId: null, status: "scheduled", urgency: "normal", aiUrgency: "normal", title: "60k mile service + tire rotation", complaint: "Due for major service interval.", subsystems: [], quoteAmount: 612.40, quoteBreakdown: makeQuoteBreakdown({ workOrderId: "wo_002", laborHours: 1.8, partsCost: 214.5, shopSupplies: 24, tax: 76.9, summary: "60k mile service estimate with scheduled labor, service parts, tire rotation, and shop supplies." }), laborHours: 1.8, partsCost: 214.5, etaIso: isoOffset(72), createdAtIso: isoOffset(-12), updatedAtIso: isoOffset(-12) },
+  { id: "wo_003", number: "WO-2873", vehicleId: "v_camry_2020", customerId: "c_jamal", technicianId: "t_marcus", status: "in_progress", urgency: "normal", aiUrgency: "normal", title: "Check engine light - P0420", complaint: "CEL on for two weeks, no driveability issue.", subsystems: [], quoteAmount: 894.17, quoteBreakdown: makeQuoteBreakdown({ workOrderId: "wo_003", laborHours: 3.1, partsCost: 421.0, equipmentCost: 45, shopSupplies: 22, summary: "Diagnostic and repair estimate for check engine light with parts and required scan tooling.", internalNotes: "Diagnostic complexity handled in labor. Validate catalyst efficiency before parts approval." }), laborHours: 3.1, partsCost: 421.0, etaIso: isoOffset(28), createdAtIso: isoOffset(-30), updatedAtIso: isoOffset(-3) },
+  { id: "wo_004", number: "WO-2874", vehicleId: "v_rav4_2021", customerId: "c_priya", technicianId: "t_luis", status: "awaiting_parts", urgency: "low", aiUrgency: "low", title: "Rear strut replacement", complaint: "Knocking over bumps, left rear.", subsystems: [], quoteAmount: 728.92, quoteBreakdown: makeQuoteBreakdown({ workOrderId: "wo_004", laborHours: 2.4, partsCost: 312.18, equipmentCost: 24, shopSupplies: 20, summary: "Rear suspension repair estimate including labor, strut parts, and shop supplies." }), laborHours: 2.4, partsCost: 312.18, etaIso: isoOffset(120), createdAtIso: isoOffset(-60), updatedAtIso: isoOffset(-18) },
+  { id: "wo_005", number: "WO-2870", vehicleId: "v_silverado_2017", customerId: "c_diego", technicianId: "t_marcus", status: "completed", urgency: "normal", aiUrgency: "normal", title: "Transmission fluid + filter service", complaint: "Scheduled maintenance, 100k miles.", subsystems: [], quoteAmount: 384.66, quoteBreakdown: makeQuoteBreakdown({ workOrderId: "wo_005", laborHours: 1.2, partsCost: 142.4, shopSupplies: 18, tax: 26.26, summary: "Transmission service with labor, filter/fluid materials, and shop supplies." }), laborHours: 1.2, partsCost: 142.4, etaIso: isoOffset(-8), createdAtIso: isoOffset(-30), updatedAtIso: isoOffset(-8) },
+  { id: "wo_006", number: "WO-2869", vehicleId: "v_mazda3_2022", customerId: "c_emma", technicianId: "t_ana", status: "invoiced", urgency: "low", aiUrgency: "low", title: "Battery replacement under warranty", complaint: "Slow crank on cold mornings.", subsystems: [], quoteAmount: 218.31, quoteBreakdown: makeQuoteBreakdown({ workOrderId: "wo_006", laborHours: 0.4, partsCost: 0, equipmentCost: 18, shopSupplies: 0, tax: 134.31, summary: "Warranty battery service estimate with labor and battery testing equipment noted." }), laborHours: 0.4, partsCost: 0, etaIso: isoOffset(-26), createdAtIso: isoOffset(-50), updatedAtIso: isoOffset(-24) },
+  { id: "wo_007", number: "WO-2875", vehicleId: "v_camry_2020", customerId: "c_jamal", technicianId: "t_luis", status: "new", urgency: "normal", aiUrgency: "high", title: "Steering vibration above 60mph", complaint: "Wheel shimmies on highway.", subsystems: [], quoteAmount: 0, quoteBreakdown: makeQuoteBreakdown({ workOrderId: "wo_007", laborHours: 0, partsCost: 0, shopSupplies: 0, summary: "Quote pending inspection. The shop will prepare a cost summary after diagnosis." }), laborHours: 0, partsCost: 0, etaIso: isoOffset(48), createdAtIso: isoOffset(-3), updatedAtIso: isoOffset(-3) },
+  { id: "wo_008", number: "WO-2868", vehicleId: "v_silverado_2017", customerId: "c_diego", technicianId: null, status: "new", urgency: "high", aiUrgency: "high", title: "Coolant leak, overheating", complaint: "Steam from hood on the way in.", subsystems: [], quoteAmount: 0, quoteBreakdown: makeQuoteBreakdown({ workOrderId: "wo_008", laborHours: 0, partsCost: 0, shopSupplies: 0, summary: "Quote pending cooling-system diagnosis. Customer-safe estimate will be prepared after inspection." }), laborHours: 0, partsCost: 0, etaIso: isoOffset(20), createdAtIso: isoOffset(-1), updatedAtIso: isoOffset(-1) },
+  { id: "wo_009", number: "WO-2867", vehicleId: "v_f150_2015", customerId: "c_maria", technicianId: "t_marcus", status: "completed", urgency: "normal", aiUrgency: "normal", title: "Spark plug + ignition coil replacement", complaint: "Rough idle when cold.", subsystems: [], quoteAmount: 472.18, quoteBreakdown: makeQuoteBreakdown({ workOrderId: "wo_009", laborHours: 1.6, partsCost: 198.42, shopSupplies: 18, summary: "Ignition repair estimate with labor, plugs/coils, and shop supplies." }), laborHours: 1.6, partsCost: 198.42, etaIso: isoOffset(-72), createdAtIso: isoOffset(-100), updatedAtIso: isoOffset(-72) },
+  { id: "wo_010", number: "WO-2866", vehicleId: "v_rav4_2021", customerId: "c_priya", technicianId: "t_ana", status: "invoiced", urgency: "low", aiUrgency: "low", title: "Cabin air filter + alignment check", complaint: "Pulls slightly right.", subsystems: [], quoteAmount: 167.44, quoteBreakdown: makeQuoteBreakdown({ workOrderId: "wo_010", laborHours: 0.8, partsCost: 38.9, shopSupplies: 8, summary: "Cabin filter replacement and alignment check estimate." }), laborHours: 0.8, partsCost: 38.9, etaIso: isoOffset(-96), createdAtIso: isoOffset(-120), updatedAtIso: isoOffset(-96) },
+  { id: "wo_011", number: "WO-2865", vehicleId: "v_mazda3_2022", customerId: "c_emma", technicianId: "t_luis", status: "scheduled", urgency: "low", aiUrgency: "low", title: "Brake fluid flush", complaint: "Maintenance interval reached.", subsystems: [], quoteAmount: 142.7, quoteBreakdown: makeQuoteBreakdown({ workOrderId: "wo_011", laborHours: 0.6, partsCost: 22.4, shopSupplies: 8, tax: 13.3, summary: "Brake fluid service estimate with labor, fluid, and shop supplies." }), laborHours: 0.6, partsCost: 22.4, etaIso: isoOffset(60), createdAtIso: isoOffset(-6), updatedAtIso: isoOffset(-6) },
 ];
 
 export const inventory: InventoryItem[] = [

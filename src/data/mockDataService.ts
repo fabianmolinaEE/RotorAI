@@ -1,11 +1,13 @@
 import type { DataService } from "./dataService";
 import {
   customers,
+  customerRecommendations,
   inventory,
   invoices,
   leads,
   profiles,
   shop,
+  serviceHistory,
   tasks,
   technicians,
   timeEntries,
@@ -27,6 +29,12 @@ export const mockDataService: DataService = {
 
   getCustomers: () => ok(customers),
   getCustomerById: (id) => ok(customers.find((c) => c.id === id) ?? null),
+  getServiceHistoryByCustomer: (customerId) =>
+    ok(serviceHistory.filter((record) => record.customerId === customerId)),
+  getServiceHistoryByVehicle: (vehicleId) =>
+    ok(serviceHistory.filter((record) => record.vehicleId === vehicleId)),
+  getCustomerRecommendations: (customerId) =>
+    ok(customerRecommendations.filter((rec) => rec.customerId === customerId)),
 
   getVehicles: () => ok(vehicles),
   getVehicleById: (id) => ok(vehicles.find((v) => v.id === id) ?? null),
@@ -56,8 +64,8 @@ export const mockDataService: DataService = {
   getLeads: () => ok(leads),
   getTasks: () => ok(tasks),
 
-  getQuoteScore: (workOrderId) =>
-    ok(workOrders.find((w) => w.id === workOrderId)?.quoteScore ?? 0),
+  getQuoteBreakdown: (workOrderId) =>
+    ok(workOrders.find((w) => w.id === workOrderId)?.quoteBreakdown ?? null),
   getAiUrgencySuggestion: (workOrderId): Promise<Urgency> =>
     ok(workOrders.find((w) => w.id === workOrderId)?.aiUrgency ?? "normal"),
   getRecommendedProcedure: (subsystemKey: SubsystemKey) => {

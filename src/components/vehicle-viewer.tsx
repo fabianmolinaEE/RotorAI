@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls, Html, useGLTF } from "@react-three/drei";
-import { DoubleSide, Box3, Vector3, Mesh } from "three";
+import { Edges, OrbitControls, Html } from "@react-three/drei";
+import { DoubleSide } from "three";
 import { cn } from "@/lib/utils";
 import { subsystemLabels } from "@/data/subsystemMap";
 import type { Subsystem, SubsystemKey, SubsystemStatus } from "@/data/types";
@@ -16,12 +16,12 @@ interface VehicleViewerProps {
 const STATUS_COLORS: Record<SubsystemStatus, string> = {
   fix: "#ef4444",
   check: "#f59e0b",
-  ok: "#4b5563",
+  ok: "#64748b",
 };
 
 const STATUS_EMISSIVE_INTENSITY: Record<SubsystemStatus, number> = {
-  fix: 0.5,
-  check: 0.3,
+  fix: 0.35,
+  check: 0.2,
   ok: 0.0,
 };
 
@@ -32,65 +32,65 @@ type GeomConfig =
 const SUBSYSTEM_GEOM: Partial<Record<SubsystemKey, GeomConfig>> = {
   engine: {
     type: "box",
-    args: [1.0, 0.5, 0.9],
-    positions: [[-1.2, 0, 0]],
+    args: [0.85, 0.28, 0.6],
+    positions: [[-1.35, -0.05, 0]],
   },
   transmission: {
     type: "box",
-    args: [0.6, 0.35, 0.5],
-    positions: [[-0.3, -0.2, 0]],
+    args: [0.62, 0.24, 0.42],
+    positions: [[-0.18, -0.14, 0]],
   },
   brakes_front: {
     type: "cylinder",
-    args: [0.28, 0.28, 0.12, 12],
+    args: [0.18, 0.18, 0.08, 24],
     positions: [
-      [-1.4, -0.45, 0.72],
-      [-1.4, -0.45, -0.72],
+      [-1.5, -0.48, 0.82],
+      [-1.5, -0.48, -0.82],
     ],
   },
   brakes_rear: {
     type: "cylinder",
-    args: [0.25, 0.25, 0.12, 12],
+    args: [0.16, 0.16, 0.08, 24],
     positions: [
-      [1.3, -0.45, 0.72],
-      [1.3, -0.45, -0.72],
+      [1.32, -0.48, 0.82],
+      [1.32, -0.48, -0.82],
     ],
   },
   suspension_front: {
     type: "box",
-    args: [0.15, 0.5, 0.1],
+    args: [0.08, 0.35, 0.08],
     positions: [
-      [-1.4, -0.2, 0.75],
-      [-1.4, -0.2, -0.75],
+      [-1.5, -0.28, 0.76],
+      [-1.5, -0.28, -0.76],
     ],
   },
   suspension_rear: {
     type: "box",
-    args: [0.15, 0.5, 0.1],
+    args: [0.08, 0.35, 0.08],
     positions: [
-      [1.3, -0.2, 0.75],
-      [1.3, -0.2, -0.75],
+      [1.32, -0.28, 0.76],
+      [1.32, -0.28, -0.76],
     ],
   },
   steering: {
     type: "box",
-    args: [0.1, 0.1, 1.0],
-    positions: [[-1.0, 0.1, 0]],
+    args: [0.08, 0.08, 0.75],
+    positions: [[-0.95, 0.08, 0]],
   },
   electrical: {
     type: "box",
-    args: [0.4, 0.3, 0.35],
-    positions: [[-1.5, 0.3, -0.4]],
+    args: [0.28, 0.2, 0.24],
+    positions: [[-1.65, 0.08, -0.36]],
   },
   exhaust: {
     type: "box",
-    args: [2.2, 0.08, 0.08],
-    positions: [[0.5, -0.55, 0.5]],
+    args: [2.0, 0.05, 0.05],
+    positions: [[0.42, -0.58, 0.45]],
   },
   hvac: {
     type: "box",
-    args: [0.45, 0.3, 0.5],
-    positions: [[-0.8, 0.4, 0]],
+    args: [0.34, 0.2, 0.38],
+    positions: [[-0.72, 0.18, 0]],
   },
 };
 
@@ -103,81 +103,98 @@ function FreezeMiniCanvas() {
   return null;
 }
 
-// Loads the real car GLB, auto-scales it to fit our subsystem coordinate space,
-// and renders semi-transparent so the colored subsystem overlays show through.
-function CarBodyModel() {
-  const gltf = useGLTF("/models/toy-car.glb");
-
-  const scaledScene = useMemo(() => {
-    const cloned = gltf.scene.clone(true);
-
-    // Bounding box in the model's own space (before we apply any transform)
-    const box = new Box3().setFromObject(cloned);
-    const size = new Vector3();
-    const center = new Vector3();
-    box.getSize(size);
-    box.getCenter(center);
-
-    // Scale the longest horizontal dimension to 4.2 units to match subsystem layout
-    const longestDim = Math.max(size.x, size.z);
-    const s = 4.2 / longestDim;
-    cloned.scale.setScalar(s);
-
-    // Center horizontally and sit the bottom of the car at Y ≈ -0.7
-    cloned.position.set(
-      -center.x * s,
-      -center.y * s - (size.y * s) * 0.5,
-      -center.z * s,
-    );
-
-    // Semi-transparent x-ray effect — clone each material so we don't mutate the cache
-    cloned.traverse((child) => {
-      if (child instanceof Mesh) {
-        if (Array.isArray(child.material)) {
-          child.material = child.material.map((m) => {
-            const cm = m.clone();
-            cm.transparent = true;
-            cm.opacity = 0.55;
-            cm.depthWrite = false;
-            return cm;
-          });
-        } else {
-          const cm = child.material.clone();
-          cm.transparent = true;
-          cm.opacity = 0.55;
-          cm.depthWrite = false;
-          child.material = cm;
-        }
-      }
-    });
-
-    return cloned;
-  }, [gltf.scene]);
-
-  // glTF cars typically face +Z; our subsystem layout has engine at X=-1.4 (front = -X).
-  // Rotating the group by +π/2 around Y maps +Z → -X, aligning model front with subsystem front.
-  return (
-    <group rotation={[0, Math.PI / 2, 0]}>
-      <primitive object={scaledScene} renderOrder={1} />
-    </group>
-  );
+interface ShellBoxProps {
+  args: [number, number, number];
+  position: [number, number, number];
+  rotation?: [number, number, number];
+  color?: string;
+  opacity?: number;
+  edgeOpacity?: number;
 }
 
-// Shown while the GLB is loading (matches old glass-shell proportions)
-function CarBodyFallback() {
+function ShellBox({
+  args,
+  position,
+  rotation = [0, 0, 0],
+  color = "#7dd3fc",
+  opacity = 0.12,
+  edgeOpacity = 0.46,
+}: ShellBoxProps) {
   return (
-    <mesh position={[0, 0, 0]} renderOrder={1}>
-      <boxGeometry args={[4.2, 1.4, 1.8]} />
+    <mesh position={position} rotation={rotation}>
+      <boxGeometry args={args} />
       <meshStandardMaterial
-        color="#94a3b8"
-        opacity={0.2}
+        color={color}
+        opacity={opacity}
         transparent
         depthWrite={false}
         side={DoubleSide}
-        roughness={0.1}
+        roughness={0.2}
         metalness={0.0}
       />
+      <Edges color="#bae6fd" transparent opacity={edgeOpacity} />
     </mesh>
+  );
+}
+
+function CarBodyModel() {
+  return (
+    <group renderOrder={1}>
+      <ShellBox args={[4.35, 0.34, 1.5]} position={[0, -0.42, 0]} opacity={0.1} edgeOpacity={0.5} />
+      <ShellBox args={[1.38, 0.2, 1.42]} position={[-1.44, -0.18, 0]} rotation={[0, 0, -0.08]} opacity={0.12} />
+      <ShellBox args={[1.12, 0.2, 1.42]} position={[1.55, -0.18, 0]} rotation={[0, 0, 0.05]} opacity={0.12} />
+      <ShellBox args={[2.24, 0.42, 1.28]} position={[0.18, 0.06, 0]} opacity={0.055} edgeOpacity={0.4} />
+      <ShellBox args={[1.1, 0.12, 1.04]} position={[0.36, 0.38, 0]} opacity={0.06} edgeOpacity={0.5} />
+      <ShellBox args={[0.12, 0.12, 1.56]} position={[-2.12, -0.36, 0]} color="#fef3c7" opacity={0.38} edgeOpacity={0.2} />
+      <ShellBox args={[0.12, 0.12, 1.56]} position={[2.15, -0.36, 0]} color="#fecaca" opacity={0.42} edgeOpacity={0.2} />
+      <ShellBox args={[0.56, 0.1, 0.42]} position={[-0.98, -0.66, 0]} color="#94a3b8" opacity={0.28} edgeOpacity={0.28} />
+      <ShellBox args={[0.38, 0.16, 0.32]} position={[1.58, -0.62, 0.52]} color="#94a3b8" opacity={0.3} edgeOpacity={0.24} />
+      <ShellBox args={[1.72, 0.04, 0.04]} position={[0.5, -0.66, 0.52]} color="#cbd5e1" opacity={0.36} edgeOpacity={0.0} />
+      <ShellBox args={[0.62, 0.035, 0.035]} position={[1.92, -0.62, 0.52]} rotation={[0, 0.18, 0]} color="#cbd5e1" opacity={0.36} edgeOpacity={0.0} />
+      <ShellBox args={[1.76, 0.035, 0.035]} position={[-1.5, -0.48, 0]} color="#cbd5e1" opacity={0.26} edgeOpacity={0.0} />
+      <ShellBox args={[1.76, 0.035, 0.035]} position={[1.42, -0.48, 0]} color="#cbd5e1" opacity={0.26} edgeOpacity={0.0} />
+
+      {[-0.66, 0.66].map((z) => (
+        <group key={`side-glass-${z}`}>
+          <ShellBox args={[0.74, 0.22, 0.016]} position={[-0.4, 0.17, z]} color="#dbeafe" opacity={0.17} edgeOpacity={0.42} />
+          <ShellBox args={[0.68, 0.22, 0.016]} position={[0.46, 0.16, z]} color="#dbeafe" opacity={0.15} edgeOpacity={0.36} />
+          <ShellBox args={[1.58, 0.025, 0.016]} position={[0.02, 0.3, z]} color="#bae6fd" opacity={0.22} edgeOpacity={0.0} />
+          <ShellBox args={[1.7, 0.025, 0.016]} position={[0.02, 0.02, z]} color="#bae6fd" opacity={0.2} edgeOpacity={0.0} />
+          <ShellBox args={[0.035, 0.3, 0.016]} position={[-0.82, 0.14, z]} color="#bae6fd" opacity={0.2} edgeOpacity={0.0} />
+          <ShellBox args={[0.035, 0.3, 0.016]} position={[0.03, 0.15, z]} color="#bae6fd" opacity={0.22} edgeOpacity={0.0} />
+          <ShellBox args={[0.035, 0.25, 0.016]} position={[0.94, 0.11, z]} color="#bae6fd" opacity={0.18} edgeOpacity={0.0} />
+        </group>
+      ))}
+
+      {[-0.79, 0.79].map((z) => (
+        <group key={`side-lines-${z}`}>
+          <ShellBox args={[3.25, 0.025, 0.025]} position={[0.08, -0.11, z]} color="#bae6fd" opacity={0.4} edgeOpacity={0.0} />
+          <ShellBox args={[3.5, 0.018, 0.025]} position={[0.08, -0.52, z]} color="#bae6fd" opacity={0.26} edgeOpacity={0.0} />
+          <ShellBox args={[0.24, 0.06, 0.018]} position={[-2.08, -0.31, z]} color="#fef08a" opacity={0.75} edgeOpacity={0.0} />
+          <ShellBox args={[0.18, 0.07, 0.018]} position={[2.08, -0.3, z]} color="#f87171" opacity={0.7} edgeOpacity={0.0} />
+          <ShellBox args={[0.1, 0.16, 0.018]} position={[-0.12, -0.2, z]} color="#bae6fd" opacity={0.2} edgeOpacity={0.18} />
+          <ShellBox args={[0.1, 0.16, 0.018]} position={[0.36, -0.2, z]} color="#bae6fd" opacity={0.18} edgeOpacity={0.18} />
+        </group>
+      ))}
+
+      {[
+        [-1.5, -0.48, 0.82],
+        [-1.5, -0.48, -0.82],
+        [1.42, -0.48, 0.82],
+        [1.42, -0.48, -0.82],
+      ].map(([x, y, z]) => (
+        <group key={`${x}-${z}`} position={[x, y, z]}>
+          <mesh>
+            <torusGeometry args={[0.31, 0.045, 12, 48]} />
+            <meshBasicMaterial color="#e2e8f0" transparent opacity={0.58} />
+          </mesh>
+          <mesh>
+            <circleGeometry args={[0.23, 48]} />
+            <meshBasicMaterial color="#020617" transparent opacity={0.32} side={DoubleSide} />
+          </mesh>
+        </group>
+      ))}
+    </group>
   );
 }
 
@@ -209,6 +226,8 @@ function SubsystemMeshGroup({ subsystem, mode, hovered, onHover, onSubsystemClic
         <mesh
           key={i}
           position={pos}
+          rotation={config.type === "cylinder" ? [Math.PI / 2, 0, 0] : undefined}
+          renderOrder={3}
           onPointerOver={
             mode === "full"
               ? (e) => {
@@ -244,6 +263,10 @@ function SubsystemMeshGroup({ subsystem, mode, hovered, onHover, onSubsystemClic
             color={color}
             emissive={color}
             emissiveIntensity={emissiveIntensity}
+            opacity={subsystem.status === "ok" ? 0.34 : 0.78}
+            transparent
+            depthWrite={false}
+            depthTest={false}
             roughness={0.4}
             metalness={0.3}
           />
@@ -313,10 +336,7 @@ export function VehicleViewer({ subsystems, mode, onSubsystemClick, className }:
           />
         ))}
 
-        {/* Real car body — falls back to glass box while loading */}
-        <Suspense fallback={<CarBodyFallback />}>
-          <CarBodyModel />
-        </Suspense>
+        <CarBodyModel />
 
         {mode === "full" && (
           <OrbitControls
@@ -332,6 +352,3 @@ export function VehicleViewer({ subsystems, mode, onSubsystemClick, className }:
     </div>
   );
 }
-
-// Preload so the model is cached before the first VehicleViewer mounts
-useGLTF.preload("/models/toy-car.glb");

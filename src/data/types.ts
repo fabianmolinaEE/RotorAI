@@ -49,6 +49,39 @@ export interface Vehicle {
   color: string;
 }
 
+export interface ServiceHistoryRecord {
+  id: string;
+  customerId: string;
+  vehicleId: string;
+  workOrderId?: string;
+  invoiceId?: string;
+  servicedAtIso: string;
+  mileage: number;
+  title: string;
+  summary: string;
+  shopName: string;
+  technicianName?: string;
+  invoiceTotal?: number;
+  customerNotes?: string;
+}
+
+export type RecommendationSeverity = "low" | "medium" | "high";
+export type RecommendationStatus = "new" | "accepted" | "declined" | "snoozed";
+
+export interface CustomerRecommendation {
+  id: string;
+  customerId: string;
+  vehicleId: string;
+  subsystemKey?: SubsystemKey;
+  title: string;
+  reason: string;
+  dueWindow: string;
+  severity: RecommendationSeverity;
+  status: RecommendationStatus;
+  generatedBy: "ai" | "advisor";
+  createdAtIso: string;
+}
+
 export type SubsystemKey =
   | "engine"
   | "brakes_front"
@@ -85,6 +118,41 @@ export type WorkOrderStatus =
 
 export type Urgency = "low" | "normal" | "high";
 
+export type QuoteLineCategory =
+  | "labor"
+  | "parts"
+  | "equipment"
+  | "shop_supplies"
+  | "fees"
+  | "tax";
+
+export interface QuoteBreakdownLine {
+  id: string;
+  category: QuoteLineCategory;
+  label: string;
+  description?: string;
+  quantity: number;
+  unit: "hour" | "each" | "flat";
+  unitCost: number;
+  total: number;
+  internalNote?: string;
+  customerVisible: boolean;
+}
+
+export interface QuoteBreakdown {
+  id: string;
+  workOrderId: string;
+  status: "draft" | "ready" | "approved";
+  generatedBy: "advisor" | "manager" | "ai_draft";
+  customerSummary: string;
+  customerDetailAvailable: boolean;
+  internalNotes?: string;
+  lines: QuoteBreakdownLine[];
+  subtotal: number;
+  tax: number;
+  total: number;
+}
+
 export interface WorkOrder {
   id: string;
   number: string;
@@ -98,7 +166,7 @@ export interface WorkOrder {
   complaint: string;
   subsystems: Subsystem[];
   quoteAmount: number;
-  quoteScore: number; // 0-100
+  quoteBreakdown: QuoteBreakdown;
   laborHours: number;
   partsCost: number;
   etaIso: string;

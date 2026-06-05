@@ -3,15 +3,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerClose, DrawerPortal, DrawerOverlay } from "@/components/ui/drawer";
 import { Drawer as DrawerPrimitive } from "vaul";
-import type { Subsystem } from "@/data/types";
+import type { QuoteBreakdown, Subsystem } from "@/data/types";
 
 interface SubsystemDetailPanelProps {
   open: boolean;
   onClose: () => void;
   subsystem: Subsystem | null;
+  quote?: QuoteBreakdown;
 }
 
-export function SubsystemDetailPanel({ open, onClose, subsystem }: SubsystemDetailPanelProps) {
+const money = (value: number) =>
+  value.toLocaleString(undefined, { style: "currency", currency: "USD" });
+
+export function SubsystemDetailPanel({ open, onClose, subsystem, quote }: SubsystemDetailPanelProps) {
   if (!subsystem) return null;
 
   return (
@@ -87,6 +91,25 @@ export function SubsystemDetailPanel({ open, onClose, subsystem }: SubsystemDeta
                 ))}
               </div>
             </section>
+
+            {quote && (
+              <section className="mt-6 rounded-xl border bg-muted/25 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      QUOTE CONTEXT
+                    </div>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {quote.customerSummary}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs text-muted-foreground">Total</div>
+                    <div className="text-sm font-semibold">{money(quote.total)}</div>
+                  </div>
+                </div>
+              </section>
+            )}
 
             {/* References section — conditional */}
             {subsystem.resources.length > 0 && (

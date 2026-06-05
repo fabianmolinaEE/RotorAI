@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useRole } from "@/app/RoleContext";
 import { navByRole } from "@/app/roleNav";
+import { cn } from "@/lib/utils";
 
 export function AppSidebar() {
   const { role } = useRole();
@@ -20,12 +21,21 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const items = navByRole[role];
+  const accentClasses = [
+    "text-sky-600 bg-sky-500/12 dark:text-sky-300 dark:bg-sky-400/12",
+    "text-blue-600 bg-blue-500/12 dark:text-blue-300 dark:bg-blue-400/12",
+    "text-cyan-600 bg-cyan-500/12 dark:text-cyan-300 dark:bg-cyan-400/12",
+    "text-sky-700 bg-sky-600/14 dark:text-sky-200 dark:bg-sky-300/12",
+    "text-blue-700 bg-blue-600/14 dark:text-blue-200 dark:bg-blue-300/12",
+  ];
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b border-white/10">
+      <SidebarHeader className="border-b bg-sidebar/70">
         <div className="flex items-center gap-2 px-2 py-2">
-          <div className="h-6 w-6 rounded-sm bg-primary" />
+          <div className="grid h-7 w-7 place-items-center rounded-lg bg-primary shadow-sm shadow-primary/20">
+            <div className="h-2.5 w-2.5 rounded-full bg-primary-foreground/90" />
+          </div>
           {!collapsed && (
             <div className="leading-tight">
               <div className="text-sm font-semibold tracking-tight">Hialeah</div>
@@ -41,15 +51,24 @@ export function AppSidebar() {
           {!collapsed && <SidebarGroupLabel>Workspace</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => {
+              {items.map((item, index) => {
                 const active =
                   item.url === pathname ||
                   (item.url !== "/" && pathname.startsWith(item.url));
                 return (
                   <SidebarMenuItem key={`${item.title}-${item.url}`}>
                     <SidebarMenuButton asChild isActive={active}>
-                      <Link to={item.url} className="flex items-center gap-2">
-                        <item.icon className="h-4 w-4" />
+                      <Link to={item.url} className="group flex items-center gap-2">
+                        <span
+                          className={cn(
+                            "grid h-6 w-6 shrink-0 place-items-center rounded-md transition-colors",
+                            active
+                              ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
+                              : accentClasses[index % accentClasses.length],
+                          )}
+                        >
+                          <item.icon className="h-3.5 w-3.5" />
+                        </span>
                         {!collapsed && <span>{item.title}</span>}
                       </Link>
                     </SidebarMenuButton>

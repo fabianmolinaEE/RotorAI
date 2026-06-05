@@ -63,37 +63,37 @@
 
 :root {
   --radius: 0.75rem;
-  --background: oklch(0.995 0 0);
-  --foreground: oklch(0.18 0.01 260);
-  --card: oklch(1 0 0 / 70%);
+  --background: oklch(0.985 0.006 250);
+  --foreground: oklch(0.18 0.015 255);
+  --card: oklch(1 0 0 / 82%);
   --card-foreground: oklch(0.18 0.01 260);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.01 260);
   --primary: oklch(0.62 0.18 245);
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.97 0.005 260);
+  --secondary: oklch(0.955 0.012 245);
   --secondary-foreground: oklch(0.22 0.01 260);
-  --muted: oklch(0.97 0.005 260);
-  --muted-foreground: oklch(0.52 0.01 260);
-  --accent: oklch(0.96 0.01 245);
-  --accent-foreground: oklch(0.4 0.12 245);
+  --muted: oklch(0.955 0.009 250);
+  --muted-foreground: oklch(0.48 0.018 255);
+  --accent: oklch(0.93 0.04 245);
+  --accent-foreground: oklch(0.36 0.14 245);
   --destructive: oklch(0.6 0.22 27);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.92 0.005 260);
-  --input: oklch(0.92 0.005 260);
+  --border: oklch(0.885 0.012 250);
+  --input: oklch(0.88 0.012 250);
   --ring: oklch(0.62 0.18 245);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-1: oklch(0.62 0.18 245);
+  --chart-2: oklch(0.62 0.16 155);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: oklch(0.975 0.008 250);
   --sidebar-foreground: oklch(0.18 0.01 260);
   --sidebar-primary: oklch(0.62 0.18 245);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.96 0.005 260);
-  --sidebar-accent-foreground: oklch(0.22 0.01 260);
-  --sidebar-border: oklch(0.92 0.005 260);
+  --sidebar-accent: oklch(0.93 0.035 245);
+  --sidebar-accent-foreground: oklch(0.31 0.12 245);
+  --sidebar-border: oklch(0.88 0.012 250);
   --sidebar-ring: oklch(0.62 0.18 245);
 }
 
@@ -134,11 +134,15 @@
 
 /* ---- Glass tokens (used as var() references, NOT in @theme inline) ---- */
 :root {
-  --glass-bg: oklch(1 0 0 / 70%);
-  --glass-bg-hover: oklch(1 0 0 / 85%);
-  --glass-border: oklch(1 0 0 / 60%);
-  --glass-shadow: 0 4px 16px oklch(0.2 0.01 260 / 12%), 0 1px 4px oklch(0.2 0.01 260 / 8%);
-  --glass-shadow-hover: 0 8px 32px oklch(0.2 0.01 260 / 18%), 0 2px 8px oklch(0.2 0.01 260 / 12%);
+  --glass-bg: oklch(1 0 0 / 88%);
+  --glass-bg-hover: oklch(1 0 0 / 96%);
+  --glass-border: oklch(0.77 0.055 245 / 65%);
+  --glass-edge-a: oklch(0.72 0.16 245 / 60%);
+  --glass-edge-b: oklch(0.76 0.12 220 / 48%);
+  --glass-bubble-a: oklch(0.76 0.16 245 / 16%);
+  --glass-bubble-b: oklch(0.84 0.1 220 / 14%);
+  --glass-shadow: 0 18px 42px oklch(0.36 0.035 250 / 15%), 0 1px 0 oklch(1 0 0 / 92%) inset, 0 0 0 1px oklch(1 0 0 / 70%) inset;
+  --glass-shadow-hover: 0 24px 58px oklch(0.32 0.045 250 / 22%), 0 1px 0 oklch(1 0 0 / 96%) inset, 0 0 0 1px oklch(1 0 0 / 80%) inset;
   --glass-blur: blur(12px);
 }
 
@@ -146,6 +150,10 @@
   --glass-bg: oklch(1 0 0 / 8%);
   --glass-bg-hover: oklch(1 0 0 / 12%);
   --glass-border: oklch(1 0 0 / 15%);
+  --glass-edge-a: oklch(0.72 0.16 245 / 28%);
+  --glass-edge-b: oklch(0.72 0.12 220 / 22%);
+  --glass-bubble-a: oklch(0.72 0.16 245 / 10%);
+  --glass-bubble-b: oklch(0.72 0.12 220 / 8%);
   --glass-shadow: 0 8px 32px oklch(0 0 0 / 40%), 0 2px 8px oklch(0 0 0 / 24%);
   --glass-shadow-hover: 0 16px 48px oklch(0 0 0 / 50%), 0 4px 16px oklch(0 0 0 / 32%);
   --glass-blur: blur(12px);
@@ -167,7 +175,9 @@
 
 :root body {
   background-image:
-    radial-gradient(ellipse 100% 50% at 50% 0%, oklch(0.97 0.008 260 / 60%) 0%, transparent 70%);
+    radial-gradient(ellipse 80% 48% at 12% 0%, oklch(0.88 0.075 245 / 38%) 0%, transparent 62%),
+    radial-gradient(ellipse 70% 42% at 88% 8%, oklch(0.9 0.07 220 / 30%) 0%, transparent 60%),
+    linear-gradient(180deg, oklch(0.99 0.006 250) 0%, oklch(0.965 0.012 250) 100%);
 }
 
 /* ---- Recharts dark overrides ---- */
@@ -176,20 +186,123 @@
 
 /* ---- Glass card utility + interactive lift ---- */
 @layer components {
+  .app-shell-bg {
+    background-image:
+      radial-gradient(ellipse 55% 35% at 50% -10%, oklch(0.83 0.09 245 / 20%) 0%, transparent 62%),
+      linear-gradient(180deg, transparent 0%, oklch(0.94 0.01 250 / 48%) 100%);
+  }
+
+  .dark .app-shell-bg {
+    background-image:
+      radial-gradient(ellipse 60% 34% at 50% -8%, oklch(0.33 0.07 245 / 26%) 0%, transparent 64%),
+      linear-gradient(180deg, transparent 0%, oklch(0.08 0.01 260 / 55%) 100%);
+  }
+
   .glass-card {
-    background-color: var(--glass-bg);
+    position: relative;
+    isolation: isolate;
+    background:
+      radial-gradient(circle at 95% 8%, var(--glass-bubble-a) 0 0.01%, transparent 34%),
+      radial-gradient(circle at 8% 100%, var(--glass-bubble-b) 0 0.01%, transparent 42%),
+      linear-gradient(145deg, var(--glass-bg), oklch(0.985 0.01 250 / 78%)) padding-box,
+      linear-gradient(135deg, var(--glass-edge-a), oklch(1 0 0 / 70%) 42%, var(--glass-edge-b)) border-box;
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
+    border: 1px solid transparent;
     box-shadow: var(--glass-shadow);
     overflow: hidden;
     transition: box-shadow 200ms ease, background-color 200ms ease, transform 200ms ease;
+  }
+
+  .dark .glass-card {
+    background:
+      radial-gradient(circle at 95% 8%, var(--glass-bubble-a) 0 0.01%, transparent 34%),
+      radial-gradient(circle at 8% 100%, var(--glass-bubble-b) 0 0.01%, transparent 42%),
+      linear-gradient(145deg, var(--glass-bg), oklch(0.16 0.012 260 / 82%)) padding-box,
+      linear-gradient(135deg, var(--glass-edge-a), oklch(1 0 0 / 10%) 42%, var(--glass-edge-b)) border-box;
+  }
+
+  .glass-card > * {
+    position: relative;
+    z-index: 1;
   }
 
   .glass-card-interactive:hover {
     background-color: var(--glass-bg-hover);
     box-shadow: var(--glass-shadow-hover);
     transform: translateY(-2px);
+  }
+
+  .stat-card {
+    min-height: 108px;
+  }
+
+  .stat-card::after {
+    position: absolute;
+    right: 14px;
+    bottom: 12px;
+    z-index: 0;
+    width: 58px;
+    height: 58px;
+    border: 1px solid var(--glass-edge-a);
+    border-radius: 999px;
+    background: radial-gradient(circle at 35% 30%, oklch(1 0 0 / 78%), var(--glass-bubble-a));
+    box-shadow: 0 12px 30px var(--glass-bubble-a);
+    content: "";
+    opacity: 0.72;
+  }
+
+  .stat-card[data-accent="sky"],
+  .metric-panel[data-accent="sky"] {
+    --glass-edge-a: oklch(0.68 0.18 245 / 72%);
+    --glass-edge-b: oklch(0.78 0.12 220 / 48%);
+    --glass-bubble-a: oklch(0.77 0.15 245 / 24%);
+    --glass-bubble-b: oklch(0.88 0.08 220 / 18%);
+  }
+
+  .stat-card[data-accent="emerald"],
+  .metric-panel[data-accent="emerald"] {
+    --glass-edge-a: oklch(0.72 0.15 160 / 72%);
+    --glass-edge-b: oklch(0.82 0.12 185 / 48%);
+    --glass-bubble-a: oklch(0.82 0.13 160 / 24%);
+    --glass-bubble-b: oklch(0.88 0.08 185 / 18%);
+  }
+
+  .stat-card[data-accent="amber"],
+  .metric-panel[data-accent="amber"] {
+    --glass-edge-a: oklch(0.78 0.17 70 / 76%);
+    --glass-edge-b: oklch(0.78 0.17 35 / 50%);
+    --glass-bubble-a: oklch(0.86 0.15 70 / 26%);
+    --glass-bubble-b: oklch(0.88 0.12 35 / 18%);
+  }
+
+  .stat-card[data-accent="rose"],
+  .metric-panel[data-accent="rose"] {
+    --glass-edge-a: oklch(0.72 0.2 18 / 72%);
+    --glass-edge-b: oklch(0.77 0.15 340 / 48%);
+    --glass-bubble-a: oklch(0.82 0.14 18 / 24%);
+    --glass-bubble-b: oklch(0.86 0.1 340 / 18%);
+  }
+
+  .stat-card[data-accent="violet"],
+  .metric-panel[data-accent="violet"] {
+    --glass-edge-a: oklch(0.66 0.18 290 / 72%);
+    --glass-edge-b: oklch(0.72 0.14 255 / 48%);
+    --glass-bubble-a: oklch(0.78 0.13 290 / 24%);
+    --glass-bubble-b: oklch(0.82 0.09 255 / 18%);
+  }
+
+  .metric-panel {
+    min-height: 320px;
+  }
+
+  .table-surface thead {
+    background:
+      linear-gradient(90deg, oklch(0.93 0.055 245 / 86%), oklch(0.95 0.045 220 / 72%));
+  }
+
+  .dark .table-surface thead {
+    background: oklch(1 0 0 / 8%);
   }
 }
 
