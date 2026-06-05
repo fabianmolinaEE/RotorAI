@@ -166,6 +166,13 @@
   --chart-5: oklch(0.72 0.22 16);
 }
 
+/* ---- Root background — prevents white bleed on mobile in dark mode ---- */
+html,
+body {
+  background-color: var(--background);
+  overflow-x: hidden;
+}
+
 /* ---- Page background depth layers ---- */
 .dark body {
   background-image:
