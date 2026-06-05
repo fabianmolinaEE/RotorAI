@@ -1,6 +1,8 @@
 import type {
+  Bay,
   Customer,
   CustomerRecommendation,
+  InventoryCategoryThreshold,
   Invoice,
   InventoryItem,
   Lead,
@@ -321,21 +323,90 @@ export const workOrders: WorkOrder[] = [
 ];
 
 export const inventory: InventoryItem[] = [
-  { id: "i_001", sku: "BP-CIV19-FR", name: "Brake pads, ceramic — Civic 2016-21 front", category: "Brakes", qtyOnHand: 7, reorderAt: 4, unitCost: 38.42, binLocation: "B-12" },
-  { id: "i_002", sku: "RT-CIV19-FR", name: "Rotor — Civic 2016-21 front (pair)", category: "Brakes", qtyOnHand: 4, reorderAt: 2, unitCost: 89.18, binLocation: "B-14" },
-  { id: "i_003", sku: "OF-HON-A02", name: "Oil filter — Honda A02", category: "Filters", qtyOnHand: 24, reorderAt: 10, unitCost: 6.87, binLocation: "F-03" },
-  { id: "i_004", sku: "OIL-5W30-QT", name: "Motor oil 5W-30 (quart)", category: "Fluids", qtyOnHand: 62, reorderAt: 30, unitCost: 7.42, binLocation: "F-01" },
-  { id: "i_005", sku: "BAT-H6-AGM", name: "AGM Battery H6", category: "Electrical", qtyOnHand: 3, reorderAt: 2, unitCost: 184.5, binLocation: "E-08" },
-  { id: "i_006", sku: "SP-IRID-NGK", name: "Iridium spark plug — NGK", category: "Engine", qtyOnHand: 31, reorderAt: 16, unitCost: 11.27, binLocation: "E-02" },
-  { id: "i_007", sku: "AF-CIV-19", name: "Air filter — Civic 2016-21", category: "Filters", qtyOnHand: 9, reorderAt: 5, unitCost: 18.4, binLocation: "F-04" },
-  { id: "i_008", sku: "CF-MAZDA3", name: "Cabin filter — Mazda3 2019+", category: "Filters", qtyOnHand: 6, reorderAt: 4, unitCost: 14.62, binLocation: "F-05" },
-  { id: "i_009", sku: "STRUT-RAV4-RR", name: "Rear strut — RAV4 2019-23", category: "Suspension", qtyOnHand: 1, reorderAt: 2, unitCost: 142.88, binLocation: "S-11" },
-  { id: "i_010", sku: "COOL-OAT-GAL", name: "OAT coolant (gallon)", category: "Fluids", qtyOnHand: 11, reorderAt: 6, unitCost: 22.4, binLocation: "F-02" },
-  { id: "i_011", sku: "TF-MERC-V", name: "ATF Mercon V (quart)", category: "Fluids", qtyOnHand: 18, reorderAt: 10, unitCost: 9.84, binLocation: "F-06" },
-  { id: "i_012", sku: "WB-22-OEM", name: "Wheel bearing — Camry 2018-21", category: "Drivetrain", qtyOnHand: 2, reorderAt: 2, unitCost: 78.12, binLocation: "D-04" },
-  { id: "i_013", sku: "BF-DOT4-LT", name: "Brake fluid DOT4 (liter)", category: "Fluids", qtyOnHand: 14, reorderAt: 8, unitCost: 11.6, binLocation: "F-07" },
-  { id: "i_014", sku: "WIPER-22-BL", name: "Wiper blade 22\"", category: "Body", qtyOnHand: 22, reorderAt: 12, unitCost: 8.94, binLocation: "B-22" },
-  { id: "i_015", sku: "FUSE-MINI-15A", name: "Mini fuse 15A (pack of 10)", category: "Electrical", qtyOnHand: 9, reorderAt: 6, unitCost: 4.18, binLocation: "E-12" },
+  { id: "i_001", sku: "BP-CIV19-FR", name: "Brake pads, ceramic — Civic 2016-21 front", category: "Brakes", qtyOnHand: 7, reorderAt: 4, unitCost: 38.42, binLocation: "B-12", usageRank: 85 },
+  { id: "i_002", sku: "RT-CIV19-FR", name: "Rotor — Civic 2016-21 front (pair)", category: "Brakes", qtyOnHand: 4, reorderAt: 2, unitCost: 89.18, binLocation: "B-14", usageRank: 78 },
+  { id: "i_003", sku: "OF-HON-A02", name: "Oil filter — Honda A02", category: "Filters", qtyOnHand: 24, reorderAt: 10, unitCost: 6.87, binLocation: "F-03", usageRank: 92 },
+  { id: "i_004", sku: "OIL-5W30-QT", name: "Motor oil 5W-30 (quart)", category: "Fluids", qtyOnHand: 62, reorderAt: 30, unitCost: 7.42, binLocation: "F-01", usageRank: 97 },
+  { id: "i_005", sku: "BAT-H6-AGM", name: "AGM Battery H6", category: "Electrical", qtyOnHand: 3, reorderAt: 2, unitCost: 184.5, binLocation: "E-08", usageRank: 55 },
+  { id: "i_006", sku: "SP-IRID-NGK", name: "Iridium spark plug — NGK", category: "Engine", qtyOnHand: 31, reorderAt: 16, unitCost: 11.27, binLocation: "E-02", usageRank: 80 },
+  { id: "i_007", sku: "AF-CIV-19", name: "Air filter — Civic 2016-21", category: "Filters", qtyOnHand: 9, reorderAt: 5, unitCost: 18.4, binLocation: "F-04", usageRank: 73 },
+  { id: "i_008", sku: "CF-MAZDA3", name: "Cabin filter — Mazda3 2019+", category: "Filters", qtyOnHand: 6, reorderAt: 4, unitCost: 14.62, binLocation: "F-05", usageRank: 60 },
+  { id: "i_009", sku: "STRUT-RAV4-RR", name: "Rear strut — RAV4 2019-23", category: "Suspension", qtyOnHand: 1, reorderAt: 2, unitCost: 142.88, binLocation: "S-11", usageRank: 38 },
+  { id: "i_010", sku: "COOL-OAT-GAL", name: "OAT coolant (gallon)", category: "Fluids", qtyOnHand: 11, reorderAt: 6, unitCost: 22.4, binLocation: "F-02", usageRank: 71 },
+  { id: "i_011", sku: "TF-MERC-V", name: "ATF Mercon V (quart)", category: "Fluids", qtyOnHand: 18, reorderAt: 10, unitCost: 9.84, binLocation: "F-06", usageRank: 66 },
+  { id: "i_012", sku: "WB-22-OEM", name: "Wheel bearing — Camry 2018-21", category: "Drivetrain", qtyOnHand: 2, reorderAt: 2, unitCost: 78.12, binLocation: "D-04", usageRank: 42 },
+  { id: "i_013", sku: "BF-DOT4-LT", name: "Brake fluid DOT4 (liter)", category: "Fluids", qtyOnHand: 14, reorderAt: 8, unitCost: 11.6, binLocation: "F-07", usageRank: 74 },
+  { id: "i_014", sku: "WIPER-22-BL", name: "Wiper blade 22\"", category: "Body", qtyOnHand: 22, reorderAt: 12, unitCost: 8.94, binLocation: "B-22", usageRank: 58 },
+  { id: "i_015", sku: "FUSE-MINI-15A", name: "Mini fuse 15A (pack of 10)", category: "Electrical", qtyOnHand: 9, reorderAt: 6, unitCost: 4.18, binLocation: "E-12", usageRank: 45 },
+];
+
+// Per-category inventory thresholds (locked decision: per-category, global fallback)
+export const inventoryCategoryThresholds: InventoryCategoryThreshold[] = [
+  { category: "Fluids",    lowAt: 8,  highAt: 40 },
+  { category: "Brakes",   lowAt: 3,  highAt: 12 },
+  { category: "Filters",  lowAt: 5,  highAt: 20 },
+  { category: "Engine",   lowAt: 10, highAt: 30 },
+  { category: "Electrical", lowAt: 3, highAt: 15 },
+  { category: "Suspension", lowAt: 2, highAt: 8 },
+  { category: "Drivetrain", lowAt: 2, highAt: 8 },
+  { category: "Body",     lowAt: 8,  highAt: 24 },
+];
+
+/** Global fallback thresholds when no category-specific entry exists */
+export const inventoryGlobalThreshold: InventoryCategoryThreshold = {
+  category: "__global__",
+  lowAt: 5,
+  highAt: 20,
+};
+
+// ─── Bay seed data (6 bays — layout space allows it per plan recommendation) ──
+export const bays: Bay[] = [
+  {
+    id: "bay_1",
+    label: "Bay 1",
+    status: "active",
+    technicianId: "t_luis",
+    workOrderId: "wo_001",
+    note: "Front brake job in progress",
+  },
+  {
+    id: "bay_2",
+    label: "Bay 2",
+    status: "active",
+    technicianId: "t_marcus",
+    workOrderId: "wo_003",
+    note: "CEL diagnosis — Camry",
+  },
+  {
+    id: "bay_3",
+    label: "Bay 3",
+    status: "empty",
+    technicianId: null,
+    workOrderId: null,
+  },
+  {
+    id: "bay_4",
+    label: "Bay 4",
+    status: "active",
+    technicianId: "t_ana",
+    workOrderId: null,
+    note: "Ana waiting on parts for wo_006",
+  },
+  {
+    id: "bay_5",
+    label: "Bay 5",
+    status: "empty",
+    technicianId: null,
+    workOrderId: null,
+  },
+  {
+    id: "bay_6",
+    label: "Bay 6",
+    status: "offline",
+    technicianId: null,
+    workOrderId: null,
+    note: "Lift out of service — inspection due Friday",
+  },
 ];
 
 export const tools: Tool[] = [
