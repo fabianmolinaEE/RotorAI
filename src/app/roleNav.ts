@@ -26,6 +26,7 @@ const ownerNav: NavItem[] = [
   { title: "Customers", url: "/customers", icon: Users },
   { title: "Inventory", url: "/inventory", icon: Package },
   { title: "Invoices", url: "/invoices", icon: Receipt },
+  { title: "Messages", url: "/messages", icon: MessageSquare },
 ];
 
 const managerNav: NavItem[] = [
@@ -35,12 +36,14 @@ const managerNav: NavItem[] = [
   { title: "Customers", url: "/customers", icon: Users },
   { title: "Inventory", url: "/inventory", icon: Package },
   { title: "Invoices", url: "/invoices", icon: Receipt },
+  { title: "Messages", url: "/messages", icon: MessageSquare },
 ];
 
 const techNav: NavItem[] = [
   { title: "My bay", url: "/tech", icon: LayoutDashboard },
   { title: "Work orders", url: "/work-orders", icon: Wrench },
   { title: "Schedule", url: "/tech", icon: CalendarClock },
+  { title: "Messages", url: "/messages", icon: MessageSquare },
 ];
 
 const serviceAdvisorNav: NavItem[] = [
@@ -48,7 +51,7 @@ const serviceAdvisorNav: NavItem[] = [
   { title: "Work orders", url: "/work-orders", icon: Wrench },
   { title: "Customers", url: "/customers", icon: Users },
   { title: "Invoices", url: "/invoices", icon: Receipt },
-  { title: "Messages", url: "/service-advisor", icon: MessageSquare },
+  { title: "Messages", url: "/messages", icon: MessageSquare },
 ];
 
 const customerNav: NavItem[] = [
@@ -56,6 +59,7 @@ const customerNav: NavItem[] = [
   { title: "Service history", url: "/portal", icon: ClipboardList },
   { title: "Invoices", url: "/invoices", icon: Receipt },
   { title: "Recommendations", url: "/portal", icon: Sparkles },
+  { title: "Messages", url: "/messages", icon: MessageSquare },
 ];
 
 export const navByRole: Record<Role, NavItem[]> = {
