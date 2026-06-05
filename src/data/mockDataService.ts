@@ -3,12 +3,14 @@ import {
   bays,
   customers,
   customerRecommendations,
+  draftWorkOrders,
   inventory,
   inventoryCategoryThresholds,
   inventoryGlobalThreshold,
   invoices,
   leads,
   messageThreads,
+  newConcerns,
   profiles,
   shop,
   serviceHistory,
@@ -20,7 +22,7 @@ import {
   vehicles,
   workOrders,
 } from "./seed";
-import type { Bay, Role, SubsystemKey, Urgency, WorkOrderStatus } from "./types";
+import type { Bay, DraftWorkOrder, Role, SubsystemKey, Urgency, WorkOrderStatus } from "./types";
 
 const ok = <T>(v: T): Promise<T> => Promise.resolve(v);
 
@@ -121,6 +123,47 @@ export const mockDataService: DataService = {
     thread.hasUnread = false;
     return ok({ ...thread, messages: [...thread.messages] });
   },
+
+  // ─── Service Advisor: Concerns and Draft Work Orders ──────────────────────
+  getNewConcerns: () =>
+    ok([...newConcerns].sort((a, b) => b.createdAtIso.localeCompare(a.createdAtIso))),
+  getNewConcernsByCustomer: (customerId) =>
+    ok(newConcerns.filter((c) => c.customerId === customerId)),
+  updateConcernDiagnostics: ({ concernId, selectedDiagnosticIds, diagnosticNotes }) => {
+    const concern = newConcerns.find((c) => c.id === concernId);
+    if (!concern) return Promise.reject(new Error(`Concern ${concernId} not found`));
+    concern.selectedDiagnosticIds = selectedDiagnosticIds;
+    concern.diagnosticNotes = diagnosticNotes;
+    concern.status = "reviewed";
+    return ok({ ...concern });
+  },
+  createDraftWorkOrder: ({ concernId, title, requestedDateIso, foremanNote }) => {
+    const concern = newConcerns.find((c) => c.id === concernId);
+    if (!concern) return Promise.reject(new Error(`Concern ${concernId} not found`));
+    const selectedDiagnostics = (concern.selectedDiagnosticIds ?? []).map(
+      (id) => concern.aiDiagnosticSuggestions.find((s) => s.id === id)?.label ?? id,
+    );
+    const draft: DraftWorkOrder = {
+      id: `draft_${Date.now()}`,
+      concernId,
+      customerId: concern.customerId,
+      vehicleId: concern.vehicleId,
+      title,
+      complaint: concern.complaint,
+      diagnosticNotes: concern.diagnosticNotes ?? "",
+      requestedDateIso,
+      urgency: concern.urgency,
+      foremanNote,
+      selectedDiagnostics,
+      createdAtIso: new Date().toISOString(),
+      status: "pending_foreman",
+    };
+    draftWorkOrders.push(draft);
+    concern.draftWorkOrderId = draft.id;
+    concern.status = "drafted";
+    return ok({ ...draft });
+  },
+  getDraftWorkOrders: () => ok([...draftWorkOrders]),
 
   getQuoteBreakdown: (workOrderId) =>
     ok(workOrders.find((w) => w.id === workOrderId)?.quoteBreakdown ?? null),

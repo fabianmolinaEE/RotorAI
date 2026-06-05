@@ -2,11 +2,13 @@ import type {
   Bay,
   Customer,
   CustomerRecommendation,
+  DraftWorkOrder,
   InventoryCategoryThreshold,
   Invoice,
   InventoryItem,
   Lead,
   MessageThread,
+  NewConcern,
   Profile,
   QuoteBreakdown,
   Role,
@@ -100,6 +102,35 @@ export interface DataService {
     bodyText: string;
     aiDrafted?: boolean;
   }): Promise<MessageThread>;
+
+  // ─── Service Advisor: Concerns and Draft Work Orders ──────────────────────
+  /** All new concerns, newest first. */
+  getNewConcerns(): Promise<NewConcern[]>;
+  /** Concerns for a specific customer. */
+  getNewConcernsByCustomer(customerId: string): Promise<NewConcern[]>;
+  /**
+   * Update diagnostic state for a concern — SA selects AI suggestions
+   * and/or adds free-text notes.
+   * Returns updated concern. Mock: mutates in-memory seed data.
+   */
+  updateConcernDiagnostics(params: {
+    concernId: string;
+    selectedDiagnosticIds: string[];
+    diagnosticNotes: string;
+  }): Promise<NewConcern>;
+  /**
+   * Promote a concern to a draft work order for foreman review.
+   * Returns the created DraftWorkOrder. Mock: mutates in-memory arrays.
+   * Customer NOT notified at this stage per locked decision.
+   */
+  createDraftWorkOrder(params: {
+    concernId: string;
+    title: string;
+    requestedDateIso: string;
+    foremanNote: string;
+  }): Promise<DraftWorkOrder>;
+  /** All draft work orders pending foreman confirmation. */
+  getDraftWorkOrders(): Promise<DraftWorkOrder[]>;
 
   // "AI" features — prefilled for demo, easy to swap to real later.
   getQuoteBreakdown(workOrderId: string): Promise<QuoteBreakdown | null>;
