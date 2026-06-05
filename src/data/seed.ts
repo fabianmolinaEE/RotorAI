@@ -15,11 +15,13 @@ import type {
   Shop,
   Task,
   Technician,
+  TechnicianShift,
   TimeEntry,
   Tool,
   ToolCheckout,
   Vehicle,
   WorkOrder,
+  WorkOrderForemanNote,
 } from "./types";
 
 export const shop: Shop = {
@@ -811,6 +813,73 @@ export const newConcerns: NewConcern[] = [
         confidenceLabel: "Moderate confidence",
       },
     ],
+  },
+];
+
+// ─── Technician shifts (timekeeping) ─────────────────────────────────────────
+// Persisted in mock data per locked decision — survives navigation within session.
+// Luis Ortega is currently clocked in; Marcus Bell is clocked in; Ana Beltran is not.
+
+export const technicianShifts: TechnicianShift[] = [
+  {
+    id: "shift_luis_today",
+    technicianId: "t_luis",
+    clockedInIso: isoOffset(-7.5),
+    clockedOutIso: null,
+    bayId: "bay_1",
+    scheduledHours: 8,
+    breakMinutes: 0,
+    shiftDate: "2026-06-02",
+  },
+  {
+    id: "shift_marcus_today",
+    technicianId: "t_marcus",
+    clockedInIso: isoOffset(-8),
+    clockedOutIso: null,
+    bayId: "bay_2",
+    scheduledHours: 8,
+    breakMinutes: 0,
+    shiftDate: "2026-06-02",
+  },
+  {
+    id: "shift_luis_yesterday",
+    technicianId: "t_luis",
+    clockedInIso: isoOffset(-31.5),
+    clockedOutIso: isoOffset(-23.5),
+    bayId: "bay_1",
+    scheduledHours: 8,
+    breakMinutes: 30,
+    shiftDate: "2026-06-01",
+  },
+];
+
+// ─── Foreman notes on assigned work orders ────────────────────────────────────
+// Shown to the technician on their queue BEFORE the CAD viewer, per locked decision.
+
+export const foremanNotes: WorkOrderForemanNote[] = [
+  {
+    workOrderId: "wo_001",
+    note: "Front brake pads and rotors confirmed by inspection. Parts are in — Maria needs the car by 4 PM. Road-test under hard braking after job, then clear ABS codes. Any abnormalities, flag me before releasing.",
+    foremanName: "Sandra Pratt",
+    writtenAtIso: isoOffset(-4),
+  },
+  {
+    workOrderId: "wo_004",
+    note: "RAV4 rear struts finally arrived. Left rear first — check the upper mount for corrosion before torquing. Alignment check is not included in the quote but eyeball it and note if it needs one.",
+    foremanName: "Sandra Pratt",
+    writtenAtIso: isoOffset(-18),
+  },
+  {
+    workOrderId: "wo_007",
+    note: "Steering shimmy above 60 mph. Start with wheel balance — if that doesn't resolve it, check inner tie rods. Do NOT put on the alignment rack until balance is verified. Quote is pending your diagnosis.",
+    foremanName: "Sandra Pratt",
+    writtenAtIso: isoOffset(-3),
+  },
+  {
+    workOrderId: "wo_011",
+    note: "Brake fluid flush — straightforward. Emma is a new customer, make sure the car is clean when you finish.",
+    foremanName: "Sandra Pratt",
+    writtenAtIso: isoOffset(-6),
   },
 ];
 

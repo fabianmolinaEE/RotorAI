@@ -17,12 +17,14 @@ import type {
   SubsystemKey,
   Task,
   Technician,
+  TechnicianShift,
   TimeEntry,
   Tool,
   ToolCheckout,
   Urgency,
   Vehicle,
   WorkOrder,
+  WorkOrderForemanNote,
   WorkOrderStatus,
 } from "./types";
 import { mockDataService } from "./mockDataService";
@@ -131,6 +133,35 @@ export interface DataService {
   }): Promise<DraftWorkOrder>;
   /** All draft work orders pending foreman confirmation. */
   getDraftWorkOrders(): Promise<DraftWorkOrder[]>;
+
+  // ─── Technician timekeeping (shift-level) ──────────────────────────────────
+  /**
+   * Get all shifts for a technician, newest first.
+   * Returns empty array if no shifts exist.
+   */
+  getShiftsByTechnician(technicianId: string): Promise<TechnicianShift[]>;
+  /**
+   * Get the currently open (not clocked out) shift for a technician.
+   * Returns null if technician is clocked out.
+   */
+  getActiveShift(technicianId: string): Promise<TechnicianShift | null>;
+  /**
+   * Clock a technician in: creates a new shift record, updates technician.clockedIn.
+   * Returns the new TechnicianShift. Mock: mutates in-memory data.
+   */
+  clockIn(params: { technicianId: string; bayId: string | null }): Promise<TechnicianShift>;
+  /**
+   * Clock a technician out: closes the active shift, updates technician.clockedIn.
+   * Returns the closed TechnicianShift. Rejects if no active shift found.
+   * Mock: mutates in-memory data.
+   */
+  clockOut(technicianId: string): Promise<TechnicianShift>;
+
+  // ─── Foreman notes on assigned work orders ─────────────────────────────────
+  /** Foreman note for a specific work order, or null if none exists. */
+  getForemanNote(workOrderId: string): Promise<WorkOrderForemanNote | null>;
+  /** All foreman notes (used to pre-fetch for the assignment queue). */
+  getForemanNotes(): Promise<WorkOrderForemanNote[]>;
 
   // "AI" features — prefilled for demo, easy to swap to real later.
   getQuoteBreakdown(workOrderId: string): Promise<QuoteBreakdown | null>;

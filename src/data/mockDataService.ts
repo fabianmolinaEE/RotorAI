@@ -4,6 +4,7 @@ import {
   customers,
   customerRecommendations,
   draftWorkOrders,
+  foremanNotes,
   inventory,
   inventoryCategoryThresholds,
   inventoryGlobalThreshold,
@@ -16,13 +17,14 @@ import {
   serviceHistory,
   tasks,
   technicians,
+  technicianShifts,
   timeEntries,
   toolCheckouts,
   tools,
   vehicles,
   workOrders,
 } from "./seed";
-import type { Bay, DraftWorkOrder, Role, SubsystemKey, Urgency, WorkOrderStatus } from "./types";
+import type { Bay, DraftWorkOrder, Role, SubsystemKey, TechnicianShift, Urgency, WorkOrderStatus } from "./types";
 
 const ok = <T>(v: T): Promise<T> => Promise.resolve(v);
 
@@ -164,6 +166,55 @@ export const mockDataService: DataService = {
     return ok({ ...draft });
   },
   getDraftWorkOrders: () => ok([...draftWorkOrders]),
+
+  // ─── Technician timekeeping ────────────────────────────────────────────────
+  getShiftsByTechnician: (technicianId) =>
+    ok([...technicianShifts]
+      .filter((s) => s.technicianId === technicianId)
+      .sort((a, b) => b.clockedInIso.localeCompare(a.clockedInIso))),
+
+  getActiveShift: (technicianId) =>
+    ok(technicianShifts.find((s) => s.technicianId === technicianId && s.clockedOutIso === null) ?? null),
+
+  clockIn: ({ technicianId, bayId }) => {
+    const existing = technicianShifts.find((s) => s.technicianId === technicianId && s.clockedOutIso === null);
+    if (existing) return ok({ ...existing });
+
+    const now = new Date().toISOString();
+    const shift: TechnicianShift = {
+      id: `shift_${technicianId}_${Date.now()}`,
+      technicianId,
+      clockedInIso: now,
+      clockedOutIso: null,
+      bayId,
+      scheduledHours: 8,
+      breakMinutes: 0,
+      shiftDate: now.slice(0, 10),
+    };
+    technicianShifts.push(shift);
+
+    const tech = technicians.find((t) => t.id === technicianId);
+    if (tech) tech.clockedIn = true;
+
+    return ok({ ...shift });
+  },
+
+  clockOut: (technicianId) => {
+    const shift = technicianShifts.find((s) => s.technicianId === technicianId && s.clockedOutIso === null);
+    if (!shift) return Promise.reject(new Error(`No active shift for technician ${technicianId}`));
+
+    shift.clockedOutIso = new Date().toISOString();
+
+    const tech = technicians.find((t) => t.id === technicianId);
+    if (tech) tech.clockedIn = false;
+
+    return ok({ ...shift });
+  },
+
+  // ─── Foreman notes ─────────────────────────────────────────────────────────
+  getForemanNote: (workOrderId) =>
+    ok(foremanNotes.find((n) => n.workOrderId === workOrderId) ?? null),
+  getForemanNotes: () => ok([...foremanNotes]),
 
   getQuoteBreakdown: (workOrderId) =>
     ok(workOrders.find((w) => w.id === workOrderId)?.quoteBreakdown ?? null),
