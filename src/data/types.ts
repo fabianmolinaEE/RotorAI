@@ -71,6 +71,49 @@ export interface Technician {
   certifications: string[];
 }
 
+// ─── Technician shift / timekeeping ──────────────────────────────────────────
+/**
+ * Shift-level clock in/out record.
+ * Designed for database-ready replacement: each field maps cleanly to a DB column.
+ * Job-level timers are deferred; job-specific TimeEntry rows remain in their own table.
+ *
+ * Break/lunch tracking: coming soon — data shape reserves breakMinutes for future use.
+ */
+export interface TechnicianShift {
+  id: string;
+  technicianId: string;
+  /** ISO timestamp when the technician clocked in for this shift */
+  clockedInIso: string;
+  /** ISO timestamp when the technician clocked out; null while shift is open */
+  clockedOutIso: string | null;
+  /** Bay the technician was assigned to at clock-in (null if not yet assigned) */
+  bayId: string | null;
+  /** Total scheduled shift hours (display hint; not enforced in demo) */
+  scheduledHours: number;
+  /**
+   * Break minutes accrued for this shift.
+   * Reserved for future break/lunch implementation (currently always 0).
+   */
+  breakMinutes: number;
+  /** ISO date string of the calendar day this shift belongs to, e.g. "2026-06-04" */
+  shiftDate: string;
+}
+
+/**
+ * Foreman note attached to a work order assignment.
+ * Shown on the technician's assigned ticket queue before any CAD interaction.
+ * Linked to the work order, so it persists across sessions in mock data.
+ */
+export interface WorkOrderForemanNote {
+  workOrderId: string;
+  /** Message from the foreman to the assigned technician */
+  note: string;
+  /** Author name for display */
+  foremanName: string;
+  /** ISO timestamp when the note was written */
+  writtenAtIso: string;
+}
+
 export interface Vehicle {
   id: string;
   customerId: string;
