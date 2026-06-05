@@ -297,7 +297,7 @@ export type MessageThreadType = "work_order" | "direct";
 export type NotificationChannel = "in_app" | "email" | "sms";
 
 export interface NotificationPreferences {
-  channels: NotificationChannel[];
+  channels: readonly NotificationChannel[];
 }
 
 export interface MessageParticipant {

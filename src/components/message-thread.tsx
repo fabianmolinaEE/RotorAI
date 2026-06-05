@@ -155,7 +155,7 @@ function AiDraftBanner({ onInsert }: { onInsert: (text: string) => void }) {
 
 // ─── Notification preferences display ─────────────────────────────────────────
 
-function NotificationPrefsRow({ channels }: { channels: string[] }) {
+function NotificationPrefsRow({ channels }: { channels: readonly string[] }) {
   const labels: Record<string, string> = {
     in_app: "In-app",
     email: "Email",
