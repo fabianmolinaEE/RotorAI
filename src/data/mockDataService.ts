@@ -1,7 +1,10 @@
 import type { DataService } from "./dataService";
 import {
+  bays,
   customers,
   inventory,
+  inventoryCategoryThresholds,
+  inventoryGlobalThreshold,
   invoices,
   leads,
   profiles,
@@ -14,7 +17,7 @@ import {
   vehicles,
   workOrders,
 } from "./seed";
-import type { Role, SubsystemKey, Urgency, WorkOrderStatus } from "./types";
+import type { Bay, Role, SubsystemKey, Urgency, WorkOrderStatus } from "./types";
 
 const ok = <T>(v: T): Promise<T> => Promise.resolve(v);
 
@@ -55,6 +58,35 @@ export const mockDataService: DataService = {
 
   getLeads: () => ok(leads),
   getTasks: () => ok(tasks),
+
+  getBays: () => ok([...bays]),
+
+  delegateTicket: ({ workOrderId, bayId, technicianId }) => {
+    const bay = bays.find((b) => b.id === bayId);
+    if (!bay) return Promise.reject(new Error(`Bay ${bayId} not found`));
+
+    const wo = workOrders.find((w) => w.id === workOrderId);
+    if (!wo) return Promise.reject(new Error(`Work order ${workOrderId} not found`));
+
+    // Mutate in-memory seed (session-local persistence as per locked decision)
+    bay.status = "active";
+    bay.workOrderId = workOrderId;
+    bay.technicianId = technicianId;
+
+    wo.technicianId = technicianId;
+    wo.status = "in_progress";
+
+    // Track in technician record
+    const tech = technicians.find((t) => t.id === technicianId);
+    if (tech && !tech.activeWorkOrderIds.includes(workOrderId)) {
+      tech.activeWorkOrderIds.push(workOrderId);
+    }
+
+    return ok({ ...bay } as Bay);
+  },
+
+  getInventoryCategoryThresholds: () =>
+    ok([...inventoryCategoryThresholds, inventoryGlobalThreshold]),
 
   getQuoteScore: (workOrderId) =>
     ok(workOrders.find((w) => w.id === workOrderId)?.quoteScore ?? 0),

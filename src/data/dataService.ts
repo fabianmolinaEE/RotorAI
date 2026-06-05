@@ -1,5 +1,7 @@
 import type {
+  Bay,
   Customer,
+  InventoryCategoryThreshold,
   Invoice,
   InventoryItem,
   Lead,
@@ -51,6 +53,24 @@ export interface DataService {
 
   getLeads(): Promise<Lead[]>;
   getTasks(): Promise<Task[]>;
+
+  // ─── Bay / floor management ────────────────────────────────────────────────
+  getBays(): Promise<Bay[]>;
+
+  /**
+   * Assign a pending work order to a bay + technician together.
+   * Returns the updated Bay on success.
+   * In the mock implementation this mutates in-memory seed data so navigation
+   * within the session reflects the change without a real backend.
+   */
+  delegateTicket(params: {
+    workOrderId: string;
+    bayId: string;
+    technicianId: string;
+  }): Promise<Bay>;
+
+  // ─── Inventory thresholds ──────────────────────────────────────────────────
+  getInventoryCategoryThresholds(): Promise<InventoryCategoryThreshold[]>;
 
   // "AI" features — prefilled for demo, easy to swap to real later.
   getQuoteScore(workOrderId: string): Promise<number>;
