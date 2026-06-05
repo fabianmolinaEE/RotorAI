@@ -6,6 +6,7 @@ import type {
   Invoice,
   InventoryItem,
   Lead,
+  MessageThread,
   Profile,
   QuoteBreakdown,
   Role,
@@ -77,6 +78,28 @@ export interface DataService {
 
   // ─── Inventory thresholds ──────────────────────────────────────────────────
   getInventoryCategoryThresholds(): Promise<InventoryCategoryThreshold[]>;
+
+  // ─── Messaging ────────────────────────────────────────────────────────────
+  /** All threads visible to the current role/user context (mock: returns all). */
+  getMessageThreads(): Promise<MessageThread[]>;
+  /** Threads linked to a specific work order. */
+  getMessageThreadsByWorkOrder(workOrderId: string): Promise<MessageThread[]>;
+  /** Threads linked to a specific customer. */
+  getMessageThreadsByCustomer(customerId: string): Promise<MessageThread[]>;
+  /** Get a single thread by ID. */
+  getMessageThreadById(threadId: string): Promise<MessageThread | null>;
+  /**
+   * Append a new message to an existing thread.
+   * Returns updated thread. Mock: mutates in-memory seed data.
+   */
+  sendMessage(params: {
+    threadId: string;
+    authorProfileId: string;
+    authorName: string;
+    authorRole: Role;
+    bodyText: string;
+    aiDrafted?: boolean;
+  }): Promise<MessageThread>;
 
   // "AI" features — prefilled for demo, easy to swap to real later.
   getQuoteBreakdown(workOrderId: string): Promise<QuoteBreakdown | null>;

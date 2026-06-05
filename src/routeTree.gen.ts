@@ -17,6 +17,7 @@ import { Route as AppTechIndexRouteImport } from './routes/_app.tech.index'
 import { Route as AppServiceAdvisorIndexRouteImport } from './routes/_app.service-advisor.index'
 import { Route as AppPortalIndexRouteImport } from './routes/_app.portal.index'
 import { Route as AppOwnerIndexRouteImport } from './routes/_app.owner.index'
+import { Route as AppMessagesIndexRouteImport } from './routes/_app.messages.index'
 import { Route as AppManagerIndexRouteImport } from './routes/_app.manager.index'
 import { Route as AppInvoicesIndexRouteImport } from './routes/_app.invoices.index'
 import { Route as AppInventoryIndexRouteImport } from './routes/_app.inventory.index'
@@ -62,6 +63,11 @@ const AppOwnerIndexRoute = AppOwnerIndexRouteImport.update({
   path: '/owner/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppMessagesIndexRoute = AppMessagesIndexRouteImport.update({
+  id: '/messages/',
+  path: '/messages/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppManagerIndexRoute = AppManagerIndexRouteImport.update({
   id: '/manager/',
   path: '/manager/',
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/inventory/': typeof AppInventoryIndexRoute
   '/invoices/': typeof AppInvoicesIndexRoute
   '/manager/': typeof AppManagerIndexRoute
+  '/messages/': typeof AppMessagesIndexRoute
   '/owner/': typeof AppOwnerIndexRoute
   '/portal/': typeof AppPortalIndexRoute
   '/service-advisor/': typeof AppServiceAdvisorIndexRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/inventory': typeof AppInventoryIndexRoute
   '/invoices': typeof AppInvoicesIndexRoute
   '/manager': typeof AppManagerIndexRoute
+  '/messages': typeof AppMessagesIndexRoute
   '/owner': typeof AppOwnerIndexRoute
   '/portal': typeof AppPortalIndexRoute
   '/service-advisor': typeof AppServiceAdvisorIndexRoute
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/_app/inventory/': typeof AppInventoryIndexRoute
   '/_app/invoices/': typeof AppInvoicesIndexRoute
   '/_app/manager/': typeof AppManagerIndexRoute
+  '/_app/messages/': typeof AppMessagesIndexRoute
   '/_app/owner/': typeof AppOwnerIndexRoute
   '/_app/portal/': typeof AppPortalIndexRoute
   '/_app/service-advisor/': typeof AppServiceAdvisorIndexRoute
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/inventory/'
     | '/invoices/'
     | '/manager/'
+    | '/messages/'
     | '/owner/'
     | '/portal/'
     | '/service-advisor/'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/invoices'
     | '/manager'
+    | '/messages'
     | '/owner'
     | '/portal'
     | '/service-advisor'
@@ -170,6 +181,7 @@ export interface FileRouteTypes {
     | '/_app/inventory/'
     | '/_app/invoices/'
     | '/_app/manager/'
+    | '/_app/messages/'
     | '/_app/owner/'
     | '/_app/portal/'
     | '/_app/service-advisor/'
@@ -241,6 +253,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOwnerIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/messages/': {
+      id: '/_app/messages/'
+      path: '/messages'
+      fullPath: '/messages/'
+      preLoaderRoute: typeof AppMessagesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/manager/': {
       id: '/_app/manager/'
       path: '/manager'
@@ -285,6 +304,7 @@ interface AppRouteChildren {
   AppInventoryIndexRoute: typeof AppInventoryIndexRoute
   AppInvoicesIndexRoute: typeof AppInvoicesIndexRoute
   AppManagerIndexRoute: typeof AppManagerIndexRoute
+  AppMessagesIndexRoute: typeof AppMessagesIndexRoute
   AppOwnerIndexRoute: typeof AppOwnerIndexRoute
   AppPortalIndexRoute: typeof AppPortalIndexRoute
   AppServiceAdvisorIndexRoute: typeof AppServiceAdvisorIndexRoute
@@ -299,6 +319,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppInventoryIndexRoute: AppInventoryIndexRoute,
   AppInvoicesIndexRoute: AppInvoicesIndexRoute,
   AppManagerIndexRoute: AppManagerIndexRoute,
+  AppMessagesIndexRoute: AppMessagesIndexRoute,
   AppOwnerIndexRoute: AppOwnerIndexRoute,
   AppPortalIndexRoute: AppPortalIndexRoute,
   AppServiceAdvisorIndexRoute: AppServiceAdvisorIndexRoute,

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { VehicleViewer } from "@/components/vehicle-viewer";
 import { SubsystemDetailPanel } from "@/components/subsystem-detail-panel";
 import { QuoteBreakdownCard } from "@/components/quote-breakdown-card";
+import { ContactButton } from "@/components/contact-button";
 import { useRole } from "@/app/RoleContext";
 import { useNotes } from "@/components/note-context";
 import { Switch } from "@/components/ui/switch";
@@ -89,6 +90,15 @@ function WorkOrderDetail() {
           <>
             <Badge variant={wo.urgency === "high" ? "destructive" : "outline"} className="capitalize">AI urgency: {wo.aiUrgency}</Badge>
             <Badge variant="secondary" className="capitalize">{wo.status.replace("_", " ")}</Badge>
+            {wo.customerId && (
+              <ContactButton
+                workOrderId={wo.id}
+                customerId={wo.customerId}
+                label="Message customer"
+                variant="outline"
+                size="sm"
+              />
+            )}
           </>
         }
       >

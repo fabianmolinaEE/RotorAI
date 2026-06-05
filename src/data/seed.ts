@@ -6,6 +6,8 @@ import type {
   Invoice,
   InventoryItem,
   Lead,
+  Message,
+  MessageThread,
   Profile,
   ServiceHistoryRecord,
   Shop,
@@ -491,4 +493,191 @@ export const tasks: Task[] = [
   { id: "ts_006", title: "Update bay 3 lift inspection log", assigneeId: "p_manager", dueIso: isoOffset(72), done: false },
   { id: "ts_007", title: "Send Priya status update — RAV4 parts ETA", assigneeId: "p_sa", dueIso: isoOffset(3), done: false },
   { id: "ts_008", title: "Confirm wo_008 coolant diagnosis with Marcus", assigneeId: "p_sa", dueIso: isoOffset(5), done: false },
+];
+
+// ─── Messaging seed data ──────────────────────────────────────────────────────
+// Participants mirror profile data from profiles[] above.
+// avatarColor values must match profiles[] entries for consistency.
+
+const participantMaria = {
+  profileId: "p_customer",
+  role: "customer" as const,
+  name: "Maria Reyes",
+  avatarColor: "oklch(0.65 0.18 330)",
+  notificationPrefs: { channels: ["in_app", "email"] as const },
+};
+
+const participantCarlos = {
+  profileId: "p_sa",
+  role: "service_advisor" as const,
+  name: "Carlos Vega",
+  avatarColor: "oklch(0.68 0.17 290)",
+  notificationPrefs: { channels: ["in_app"] as const },
+};
+
+const participantLuis = {
+  profileId: "p_tech",
+  role: "technician" as const,
+  name: "Luis Ortega",
+  avatarColor: "oklch(0.7 0.17 50)",
+  notificationPrefs: { channels: ["in_app"] as const },
+};
+
+const participantSandra = {
+  profileId: "p_manager",
+  role: "manager" as const,
+  name: "Sandra Pratt",
+  avatarColor: "oklch(0.65 0.16 160)",
+  notificationPrefs: { channels: ["in_app", "email"] as const },
+};
+
+// Thread 1: Customer ↔ Shop (work-order context: WO-001 brakes)
+const messagesWo001: Message[] = [
+  {
+    id: "msg_001",
+    threadId: "thread_wo001_maria",
+    authorProfileId: "p_sa",
+    authorName: "Carlos Vega",
+    authorRole: "service_advisor",
+    bodyText: "Hi Maria! Just wanted to let you know we've completed the initial inspection on your Civic. We found the front pads are worn past the wear indicator and the rotors have grooves. I'm putting together your quote now — should be ready within the hour.",
+    sentAtIso: isoOffset(-3),
+    aiDrafted: false,
+  },
+  {
+    id: "msg_002",
+    threadId: "thread_wo001_maria",
+    authorProfileId: "p_customer",
+    authorName: "Maria Reyes",
+    authorRole: "customer",
+    bodyText: "Thanks Carlos! Is there any chance I can get the car back by this afternoon? I have to pick up my kids at 4.",
+    sentAtIso: isoOffset(-2.5),
+    aiDrafted: false,
+  },
+  {
+    id: "msg_003",
+    threadId: "thread_wo001_maria",
+    authorProfileId: "p_sa",
+    authorName: "Carlos Vega",
+    authorRole: "service_advisor",
+    bodyText: "Great news — Luis is already on it. As long as the rotors we ordered come in on time, we're looking at 3:30 PM. I'll text you the moment it's ready.",
+    sentAtIso: isoOffset(-2),
+    aiDrafted: true,
+  },
+  {
+    id: "msg_004",
+    threadId: "thread_wo001_maria",
+    authorProfileId: "p_customer",
+    authorName: "Maria Reyes",
+    authorRole: "customer",
+    bodyText: "Perfect, that works! Thanks so much.",
+    sentAtIso: isoOffset(-1.5),
+    aiDrafted: false,
+  },
+];
+
+// Thread 2: Internal — Foreman ↔ Technician (Luis status check)
+const messagesInternalLuisSandra: Message[] = [
+  {
+    id: "msg_010",
+    threadId: "thread_sandra_luis",
+    authorProfileId: "p_manager",
+    authorName: "Sandra Pratt",
+    authorRole: "manager",
+    bodyText: "Luis, how are you looking on the Civic brakes? Maria needs it by 4 PM.",
+    sentAtIso: isoOffset(-1.8),
+    aiDrafted: false,
+  },
+  {
+    id: "msg_011",
+    threadId: "thread_sandra_luis",
+    authorProfileId: "p_tech",
+    authorName: "Luis Ortega",
+    authorRole: "technician",
+    bodyText: "Rotors just came in. I'm about 45 min out. Should be tight but doable.",
+    sentAtIso: isoOffset(-1.2),
+    aiDrafted: false,
+  },
+  {
+    id: "msg_012",
+    threadId: "thread_sandra_luis",
+    authorProfileId: "p_manager",
+    authorName: "Sandra Pratt",
+    authorRole: "manager",
+    bodyText: "Good. Let Carlos know when you start the road test so he can update Maria.",
+    sentAtIso: isoOffset(-1),
+    aiDrafted: false,
+  },
+];
+
+// Thread 3: Service advisor ↔ Customer (Priya, RAV4 parts status)
+const messagesWo003Priya: Message[] = [
+  {
+    id: "msg_020",
+    threadId: "thread_wo_rav4_priya",
+    authorProfileId: "p_sa",
+    authorName: "Carlos Vega",
+    authorRole: "service_advisor",
+    bodyText: "Hi Priya! Quick update on your RAV4 — the rear strut mounts are on back-order. We expect them Thursday. I'll confirm as soon as they arrive.",
+    sentAtIso: isoOffset(-5),
+    aiDrafted: false,
+  },
+  {
+    id: "msg_021",
+    threadId: "thread_wo_rav4_priya",
+    authorProfileId: "p_customer",
+    authorName: "Priya Shah",
+    authorRole: "customer",
+    bodyText: "Thanks for letting me know. Is there anything I should be careful about driving with the struts in this condition until then?",
+    sentAtIso: isoOffset(-4.5),
+    aiDrafted: false,
+  },
+  {
+    id: "msg_022",
+    threadId: "thread_wo_rav4_priya",
+    authorProfileId: "p_sa",
+    authorName: "Carlos Vega",
+    authorRole: "service_advisor",
+    bodyText: "It's safe to drive short distances at moderate speeds. Avoid rough roads or highway speeds. No sharp turns at high speed. I'll call you Thursday when we can schedule the repair.",
+    sentAtIso: isoOffset(-4),
+    aiDrafted: true,
+  },
+];
+
+export const messageThreads: MessageThread[] = [
+  {
+    id: "thread_wo001_maria",
+    type: "work_order",
+    subject: "Honda Civic — Front Brake Repair",
+    participants: [participantMaria, participantCarlos],
+    workOrderId: "wo_001",
+    customerId: "c_maria",
+    vehicleId: "v_civic_2019",
+    messages: messagesWo001,
+    createdAtIso: isoOffset(-3),
+    updatedAtIso: isoOffset(-1.5),
+    hasUnread: false,
+  },
+  {
+    id: "thread_sandra_luis",
+    type: "direct",
+    subject: "Civic brake ETA check",
+    participants: [participantSandra, participantLuis],
+    messages: messagesInternalLuisSandra,
+    createdAtIso: isoOffset(-1.8),
+    updatedAtIso: isoOffset(-1),
+    hasUnread: true,
+  },
+  {
+    id: "thread_wo_rav4_priya",
+    type: "work_order",
+    subject: "Toyota RAV4 — Rear Strut Parts Update",
+    participants: [{ ...participantMaria, profileId: "p_priya", name: "Priya Shah", avatarColor: "oklch(0.62 0.15 200)" }, participantCarlos],
+    workOrderId: "wo_003",
+    customerId: "c_priya",
+    vehicleId: "v_rav4_2021",
+    messages: messagesWo003Priya,
+    createdAtIso: isoOffset(-5),
+    updatedAtIso: isoOffset(-4),
+    hasUnread: true,
+  },
 ];
