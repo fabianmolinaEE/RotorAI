@@ -2,10 +2,10 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 const urgencyClasses: Record<string, string> = {
-  high: "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800",
+  high: "border-red-200 bg-red-100 text-red-700 shadow-sm shadow-red-500/10 dark:border-red-800 dark:bg-red-900/30 dark:text-red-300",
   normal:
-    "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800",
-  low: "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700",
+    "border-amber-200 bg-amber-100 text-amber-700 shadow-sm shadow-amber-500/10 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
+  low: "border-slate-200 bg-slate-100 text-slate-500 shadow-sm shadow-slate-500/10 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400",
 };
 
 const urgencyLabels: Record<string, string> = {

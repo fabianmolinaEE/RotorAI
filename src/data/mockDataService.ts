@@ -1,11 +1,16 @@
 import type { DataService } from "./dataService";
 import {
+  bays,
   customers,
+  customerRecommendations,
   inventory,
+  inventoryCategoryThresholds,
+  inventoryGlobalThreshold,
   invoices,
   leads,
   profiles,
   shop,
+  serviceHistory,
   tasks,
   technicians,
   timeEntries,
@@ -14,7 +19,7 @@ import {
   vehicles,
   workOrders,
 } from "./seed";
-import type { Role, SubsystemKey, Urgency, WorkOrderStatus } from "./types";
+import type { Bay, Role, SubsystemKey, Urgency, WorkOrderStatus } from "./types";
 
 const ok = <T>(v: T): Promise<T> => Promise.resolve(v);
 
@@ -27,6 +32,12 @@ export const mockDataService: DataService = {
 
   getCustomers: () => ok(customers),
   getCustomerById: (id) => ok(customers.find((c) => c.id === id) ?? null),
+  getServiceHistoryByCustomer: (customerId) =>
+    ok(serviceHistory.filter((record) => record.customerId === customerId)),
+  getServiceHistoryByVehicle: (vehicleId) =>
+    ok(serviceHistory.filter((record) => record.vehicleId === vehicleId)),
+  getCustomerRecommendations: (customerId) =>
+    ok(customerRecommendations.filter((rec) => rec.customerId === customerId)),
 
   getVehicles: () => ok(vehicles),
   getVehicleById: (id) => ok(vehicles.find((v) => v.id === id) ?? null),
@@ -56,8 +67,35 @@ export const mockDataService: DataService = {
   getLeads: () => ok(leads),
   getTasks: () => ok(tasks),
 
-  getQuoteScore: (workOrderId) =>
-    ok(workOrders.find((w) => w.id === workOrderId)?.quoteScore ?? 0),
+  getBays: () => ok([...bays]),
+
+  delegateTicket: ({ workOrderId, bayId, technicianId }) => {
+    const bay = bays.find((b) => b.id === bayId);
+    if (!bay) return Promise.reject(new Error(`Bay ${bayId} not found`));
+
+    const wo = workOrders.find((w) => w.id === workOrderId);
+    if (!wo) return Promise.reject(new Error(`Work order ${workOrderId} not found`));
+
+    bay.status = "active";
+    bay.workOrderId = workOrderId;
+    bay.technicianId = technicianId;
+
+    wo.technicianId = technicianId;
+    wo.status = "in_progress";
+
+    const tech = technicians.find((t) => t.id === technicianId);
+    if (tech && !tech.activeWorkOrderIds.includes(workOrderId)) {
+      tech.activeWorkOrderIds.push(workOrderId);
+    }
+
+    return ok({ ...bay } as Bay);
+  },
+
+  getInventoryCategoryThresholds: () =>
+    ok([...inventoryCategoryThresholds, inventoryGlobalThreshold]),
+
+  getQuoteBreakdown: (workOrderId) =>
+    ok(workOrders.find((w) => w.id === workOrderId)?.quoteBreakdown ?? null),
   getAiUrgencySuggestion: (workOrderId): Promise<Urgency> =>
     ok(workOrders.find((w) => w.id === workOrderId)?.aiUrgency ?? "normal"),
   getRecommendedProcedure: (subsystemKey: SubsystemKey) => {

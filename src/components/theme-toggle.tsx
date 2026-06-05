@@ -6,9 +6,9 @@ export function ThemeToggle() {
   const { theme, toggle } = useTheme();
   return (
     <Button
-      variant="ghost"
+      variant="outline"
       size="icon"
-      className="h-8 w-8"
+      className="h-8 w-8 bg-background/80 shadow-sm"
       onClick={toggle}
       aria-label="Toggle theme"
     >

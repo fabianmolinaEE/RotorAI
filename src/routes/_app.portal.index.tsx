@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { MessageCircle } from "lucide-react";
 import { getDataService } from "@/data/dataService";
 import { PageShell } from "@/components/page-shell";
 import { VehicleViewer } from "@/components/vehicle-viewer";
+import { QuoteBreakdownCard } from "@/components/quote-breakdown-card";
+import { CustomerRecommendations } from "@/components/customer-recommendations";
+import { ServiceHistory } from "@/components/service-history";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { StatusChip } from "@/components/status-chip";
 import { useNotes } from "@/components/note-context";
-import type { Vehicle, WorkOrder, Technician } from "@/data/types";
+import type { CustomerRecommendation, ServiceHistoryRecord, Technician, Vehicle, WorkOrder } from "@/data/types";
 
 export const Route = createFileRoute("/_app/portal/")({
   component: CustomerHome,
@@ -20,12 +24,34 @@ function CustomerHome() {
   const { data: wos = [] } = useQuery({ queryKey: ["wos", "c_maria"], queryFn: () => svc.getWorkOrdersByCustomer("c_maria") });
   const { data: techs = [] } = useQuery({ queryKey: ["techs"], queryFn: () => svc.getTechnicians() });
   const { data: shop } = useQuery({ queryKey: ["shop"], queryFn: () => svc.getShop() });
+  const { data: history = [] } = useQuery({ queryKey: ["serviceHistory", "c_maria"], queryFn: () => svc.getServiceHistoryByCustomer("c_maria") });
+  const { data: recommendations = [] } = useQuery({ queryKey: ["recommendations", "c_maria"], queryFn: () => svc.getCustomerRecommendations("c_maria") });
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [vehicleTabs, setVehicleTabs] = useState<Record<string, string>>({});
   const handleToggle = (vehicleId: string) => setExpandedId((prev) => (prev === vehicleId ? null : vehicleId));
+  const openChat = () => {
+    const firstVehicleId = vehicles[0]?.id;
+    if (!firstVehicleId) return;
+    setExpandedId(firstVehicleId);
+    setVehicleTabs((prev) => ({ ...prev, [firstVehicleId]: "chat" }));
+  };
 
   return (
-    <PageShell title="Your garage" description={maria ? `${maria.name} · ${vehicles.length} vehicles` : ""}>
+    <PageShell
+      title="Your garage"
+      description={maria ? `${maria.name} · ${vehicles.length} vehicles` : ""}
+      actions={
+        <button
+          type="button"
+          onClick={openChat}
+          className="inline-flex h-9 items-center gap-2 rounded-lg border bg-background/80 px-3 text-sm font-medium shadow-sm hover:bg-accent"
+        >
+          <MessageCircle className="h-4 w-4" />
+          Chat with shop
+        </button>
+      }
+    >
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         {vehicles.map((v) => {
           const expanded = expandedId === v.id;
@@ -66,6 +92,10 @@ function CustomerHome() {
                     wos={vehicleWos}
                     techs={techs}
                     shopName={shop?.name ?? "Hialeah Auto Works"}
+                    serviceHistory={history.filter((record) => record.vehicleId === v.id)}
+                    recommendations={recommendations.filter((rec) => rec.vehicleId === v.id)}
+                    activeTab={vehicleTabs[v.id] ?? "active"}
+                    onTabChange={(tab) => setVehicleTabs((prev) => ({ ...prev, [v.id]: tab }))}
                   />
                 )}
               </div>
@@ -82,26 +112,35 @@ function VehicleExpansion({
   wos,
   techs,
   shopName,
+  serviceHistory,
+  recommendations,
+  activeTab,
+  onTabChange,
 }: {
   vehicle: Vehicle;
   wos: WorkOrder[];
   techs: Technician[];
   shopName: string;
+  serviceHistory: ServiceHistoryRecord[];
+  recommendations: CustomerRecommendation[];
+  activeTab: string;
+  onTabChange: (tab: string) => void;
 }) {
   const { notes } = useNotes();
   const tById = new Map(techs.map((t) => [t.id, t]));
 
   const ACTIVE = new Set(["new", "scheduled", "in_progress", "awaiting_parts"]);
   const active = wos.filter((w) => ACTIVE.has(w.status));
-  const past = wos.filter((w) => w.status === "completed" || w.status === "invoiced");
 
   return (
     <div className="border-t p-4">
-      <Tabs defaultValue="active">
+      <Tabs value={activeTab} onValueChange={onTabChange}>
         <TabsList>
           <TabsTrigger value="active">Active Work</TabsTrigger>
-          <TabsTrigger value="past">Past Work</TabsTrigger>
+          <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+          <TabsTrigger value="history">History</TabsTrigger>
           <TabsTrigger value="diagnostics">Diagnostics</TabsTrigger>
+          <TabsTrigger value="chat">Chat</TabsTrigger>
         </TabsList>
 
         <TabsContent value="active" className="mt-4">
@@ -140,22 +179,11 @@ function VehicleExpansion({
                       </div>
                       <div>
                         <div className="text-xs text-muted-foreground">Quote</div>
-                        <div className="text-sm font-medium">${wo.quoteAmount.toFixed(2)}</div>
+                        <div className="text-sm font-medium">${wo.quoteBreakdown.total.toFixed(2)}</div>
                       </div>
                     </div>
 
-                    <div>
-                      <div className="mb-1 flex items-center justify-between">
-                        <div className="text-xs text-muted-foreground">Reasonableness score</div>
-                        <div className="text-xs font-medium">{wo.quoteScore}/100</div>
-                      </div>
-                      <div className="h-2 w-full rounded-full bg-muted">
-                        <div
-                          className="h-2 rounded-full bg-primary"
-                          style={{ width: `${wo.quoteScore}%` }}
-                        />
-                      </div>
-                    </div>
+                    <QuoteBreakdownCard quote={wo.quoteBreakdown} variant="customer" />
 
                     <div>
                       <div className="text-xs text-muted-foreground mb-1">Technician note</div>
@@ -174,41 +202,12 @@ function VehicleExpansion({
           )}
         </TabsContent>
 
-        <TabsContent value="past" className="mt-4">
-          {past.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No past service records.</p>
-          ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b text-left">
-                  <th className="pb-2 pr-4 font-medium text-muted-foreground">Date</th>
-                  <th className="pb-2 pr-4 font-medium text-muted-foreground">Title</th>
-                  <th className="pb-2 pr-4 font-medium text-muted-foreground">Shop</th>
-                  <th className="pb-2 font-medium text-muted-foreground">Receipt</th>
-                </tr>
-              </thead>
-              <tbody>
-                {past.map((wo) => {
-                  const d = new Date(wo.updatedAtIso);
-                  const dateLabel = isNaN(d.getTime())
-                    ? "—"
-                    : d.toLocaleString(undefined, { dateStyle: "medium" });
-                  return (
-                    <tr key={wo.id} className="border-b last:border-0">
-                      <td className="py-2 pr-4 text-muted-foreground">{dateLabel}</td>
-                      <td className="py-2 pr-4">{wo.title}</td>
-                      <td className="py-2 pr-4 text-muted-foreground">{shopName}</td>
-                      <td className="py-2">
-                        <a href="#" className="text-primary hover:underline">
-                          View receipt
-                        </a>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
+        <TabsContent value="recommendations" className="mt-4">
+          <CustomerRecommendations recommendations={recommendations} />
+        </TabsContent>
+
+        <TabsContent value="history" className="mt-4">
+          <ServiceHistory records={serviceHistory} />
         </TabsContent>
 
         <TabsContent value="diagnostics" className="mt-4">
@@ -236,6 +235,26 @@ function VehicleExpansion({
                   )
                 )}
               </ul>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="chat" className="mt-4">
+          <div id="customer-chat" className="rounded-xl glass-card p-4">
+            <div className="flex items-start gap-3">
+              <span className="grid h-10 w-10 place-items-center rounded-xl border border-sky-500/20 bg-sky-500/12 text-sky-600 dark:text-sky-300">
+                <MessageCircle className="h-4 w-4" />
+              </span>
+              <div>
+                <div className="text-sm font-semibold">Message Hialeah Auto Works</div>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Ask about active work, request a detailed quote, or follow up on recommendations.
+                  Full threaded messaging comes in the next chat phase.
+                </p>
+                <button className="mt-3 inline-flex h-9 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90">
+                  Start message
+                </button>
+              </div>
             </div>
           </div>
         </TabsContent>

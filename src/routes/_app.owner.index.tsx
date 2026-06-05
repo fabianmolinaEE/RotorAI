@@ -9,6 +9,14 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import {
+  AlertTriangle,
+  BarChart3,
+  CircleDollarSign,
+  Gauge,
+  Package,
+  UserCheck,
+} from "lucide-react";
 import { getDataService } from "@/data/dataService";
 import { PageShell, Stat } from "@/components/page-shell";
 import { UrgencyBadge } from "@/components/urgency-badge";
@@ -120,21 +128,29 @@ function OverviewSection({
           label="Open tickets"
           value={String(openTickets.length)}
           sub="across all bays"
+          icon={Gauge}
+          accent="sky"
         />
         <Stat
           label="Active techs"
           value={String(activeTechs.length)}
           sub={`of ${techs.length} on roster`}
+          icon={UserCheck}
+          accent="sky"
         />
         <Stat
           label="Weekly revenue"
           value={`$${weeklyRevenue.toFixed(0)}`}
           sub="from invoice data"
+          icon={CircleDollarSign}
+          accent="emerald"
         />
         <Stat
           label="High urgency"
           value={String(highUrgency.length)}
           sub="ai-flagged"
+          icon={AlertTriangle}
+          accent="sky"
         />
       </div>
 
@@ -144,25 +160,36 @@ function OverviewSection({
           label="Inventory value"
           value={`$${inventoryValue.toFixed(0)}`}
           sub="parts on hand"
+          icon={Package}
+          accent="sky"
         />
         <Stat
           label="Active leads"
           value={String(leads.length)}
           sub="in pipeline"
+          icon={BarChart3}
+          accent="sky"
         />
         <Stat
           label="Throughput"
           value={String(throughput)}
           sub="tickets closed this week"
+          icon={Gauge}
+          accent="sky"
         />
       </div>
 
       {/* Revenue + Profit charts */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="rounded-2xl glass-card p-4">
-          <p className="mb-3 text-sm font-semibold text-muted-foreground">
-            Revenue by week
-          </p>
+        <div className="metric-panel rounded-2xl glass-card p-4" data-accent="emerald">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <p className="text-sm font-semibold text-foreground">
+              Revenue by week
+            </p>
+            <span className="rounded-full bg-emerald-500/12 px-2 py-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-300">
+              Revenue
+            </span>
+          </div>
           {chartData.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               No invoice data available yet.
@@ -174,12 +201,12 @@ function OverviewSection({
                   <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop
                       offset="5%"
-                      stopColor="var(--chart-1)"
+                      stopColor="var(--chart-2)"
                       stopOpacity={0.3}
                     />
                     <stop
                       offset="95%"
-                      stopColor="var(--chart-1)"
+                      stopColor="var(--chart-2)"
                       stopOpacity={0}
                     />
                   </linearGradient>
@@ -189,7 +216,7 @@ function OverviewSection({
                 <Tooltip />
                 <Area
                   dataKey="revenue"
-                  stroke="var(--chart-1)"
+                  stroke="var(--chart-2)"
                   fill="url(#revGrad)"
                   strokeWidth={2}
                 />
@@ -198,10 +225,15 @@ function OverviewSection({
           )}
         </div>
 
-        <div className="rounded-2xl glass-card p-4">
-          <p className="mb-3 text-sm font-semibold text-muted-foreground">
-            Profit by week
-          </p>
+        <div className="metric-panel rounded-2xl glass-card p-4" data-accent="emerald">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <p className="text-sm font-semibold text-foreground">
+              Profit by week
+            </p>
+            <span className="rounded-full bg-emerald-500/12 px-2 py-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-300">
+              Margin
+            </span>
+          </div>
           {chartData.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               No invoice data available yet.
@@ -243,9 +275,9 @@ function OverviewSection({
         <h2 className="mb-3 text-lg font-semibold">
           Urgency breakdown this week
         </h2>
-        <div className="overflow-hidden rounded-2xl glass-card">
+        <div className="table-surface overflow-hidden rounded-2xl glass-card">
           <table className="w-full text-sm">
-            <thead className="border-b bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
+            <thead className="border-b text-left text-xs uppercase tracking-wider text-muted-foreground">
               <tr>
                 <th className="px-3 py-2 font-medium">Urgency</th>
                 <th className="px-3 py-2 font-medium">Tickets</th>
@@ -305,9 +337,9 @@ function WorkOrdersSection({ wos }: { wos: WorkOrder[] }) {
   return (
     <div>
       <h2 className="mb-3 text-lg font-semibold">Work Orders</h2>
-      <div className="overflow-hidden rounded-2xl glass-card">
+      <div className="table-surface overflow-hidden rounded-2xl glass-card">
         <table className="w-full text-sm">
-          <thead className="border-b bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
+          <thead className="border-b text-left text-xs uppercase tracking-wider text-muted-foreground">
             <tr>
               <th className="px-3 py-2 font-medium">WO #</th>
               <th className="px-3 py-2 font-medium">Vehicle</th>
@@ -347,9 +379,9 @@ function FinanceSection({ invoices }: { invoices: Invoice[] }) {
   return (
     <div>
       <h2 className="mb-3 text-lg font-semibold">Finance</h2>
-      <div className="overflow-hidden rounded-2xl glass-card">
+      <div className="table-surface overflow-hidden rounded-2xl glass-card">
         <table className="w-full text-sm">
-          <thead className="border-b bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
+          <thead className="border-b text-left text-xs uppercase tracking-wider text-muted-foreground">
             <tr>
               <th className="px-3 py-2 font-medium">Invoice #</th>
               <th className="px-3 py-2 font-medium">Status</th>
@@ -376,7 +408,7 @@ function FinanceSection({ invoices }: { invoices: Invoice[] }) {
                 </td>
               </tr>
             ))}
-            <tr className="border-t bg-white/5 font-semibold">
+            <tr className="border-t bg-muted/40 font-semibold">
               <td className="px-3 py-2" colSpan={2}>
                 Total
               </td>
@@ -399,9 +431,9 @@ function InventorySection({
   return (
     <div>
       <h2 className="mb-3 text-lg font-semibold">Inventory</h2>
-      <div className="overflow-hidden rounded-2xl glass-card">
+      <div className="table-surface overflow-hidden rounded-2xl glass-card">
         <table className="w-full text-sm">
-          <thead className="border-b bg-white/5 text-left text-xs uppercase tracking-wider text-muted-foreground">
+          <thead className="border-b text-left text-xs uppercase tracking-wider text-muted-foreground">
             <tr>
               <th className="px-3 py-2 font-medium">SKU</th>
               <th className="px-3 py-2 font-medium">Name</th>
@@ -468,17 +500,17 @@ function OwnerHome() {
       description="Frank Delgado · Service Manager"
     >
       {/* Secondary nav rail */}
-      <div className="mb-6 flex flex-wrap gap-1 border-b pb-2">
+      <div className="mb-6 flex flex-wrap gap-1 rounded-2xl border border-sky-200/80 bg-white/60 p-1.5 shadow-lg shadow-sky-950/8 backdrop-blur dark:border-white/10 dark:bg-white/5 dark:shadow-none">
         {NAV.map((n) => (
           <button
             key={n.id}
             type="button"
             onClick={() => setActiveSection(n.id)}
             className={cn(
-              "rounded-md px-3 py-1.5 text-sm",
+              "rounded-lg px-3 py-1.5 text-sm transition-colors",
               activeSection === n.id
-                ? "bg-accent font-semibold text-accent-foreground"
-                : "text-muted-foreground hover:bg-muted",
+                ? "bg-primary font-semibold text-primary-foreground shadow-sm shadow-primary/20"
+                : "text-muted-foreground hover:bg-accent/70 hover:text-accent-foreground",
             )}
           >
             {n.label}

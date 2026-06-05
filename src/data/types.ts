@@ -1,5 +1,40 @@
 export type Role = "owner" | "manager" | "service_advisor" | "technician" | "customer";
 
+// ─── Bay entities ─────────────────────────────────────────────────────────────
+// Three canonical states per locked decision:
+//   Active  = technician + job assigned (bay is occupied)
+//   Empty   = available, no current assignment
+//   Offline = bay closed/blocked/out of service
+export type BayStatus = "active" | "empty" | "offline";
+
+export interface Bay {
+  id: string;
+  /** Display label, e.g. "Bay 1" */
+  label: string;
+  status: BayStatus;
+  /** Technician currently assigned to this bay (null when empty/offline) */
+  technicianId: string | null;
+  /** Active work order in this bay (null when empty/offline) */
+  workOrderId: string | null;
+  /** Human-readable note, e.g. "Lift out of service until Friday" */
+  note?: string;
+}
+
+// ─── Inventory quantity classification ────────────────────────────────────────
+/** Per-category thresholds for inventory quantity status labels */
+export interface InventoryCategoryThreshold {
+  category: string;
+  /** At or below this qty → "Low quantity" */
+  lowAt: number;
+  /** At or above this qty → "High quantity" */
+  highAt: number;
+}
+
+export type InventoryQuantityStatus = "low" | "healthy" | "high";
+
+/** Usage ranking 0-100; items ≥ 70 are labelled "Frequently used" */
+export type InventoryUsageRank = number;
+
 export interface Shop {
   id: string;
   name: string;
@@ -49,6 +84,39 @@ export interface Vehicle {
   color: string;
 }
 
+export interface ServiceHistoryRecord {
+  id: string;
+  customerId: string;
+  vehicleId: string;
+  workOrderId?: string;
+  invoiceId?: string;
+  servicedAtIso: string;
+  mileage: number;
+  title: string;
+  summary: string;
+  shopName: string;
+  technicianName?: string;
+  invoiceTotal?: number;
+  customerNotes?: string;
+}
+
+export type RecommendationSeverity = "low" | "medium" | "high";
+export type RecommendationStatus = "new" | "accepted" | "declined" | "snoozed";
+
+export interface CustomerRecommendation {
+  id: string;
+  customerId: string;
+  vehicleId: string;
+  subsystemKey?: SubsystemKey;
+  title: string;
+  reason: string;
+  dueWindow: string;
+  severity: RecommendationSeverity;
+  status: RecommendationStatus;
+  generatedBy: "ai" | "advisor";
+  createdAtIso: string;
+}
+
 export type SubsystemKey =
   | "engine"
   | "brakes_front"
@@ -85,6 +153,41 @@ export type WorkOrderStatus =
 
 export type Urgency = "low" | "normal" | "high";
 
+export type QuoteLineCategory =
+  | "labor"
+  | "parts"
+  | "equipment"
+  | "shop_supplies"
+  | "fees"
+  | "tax";
+
+export interface QuoteBreakdownLine {
+  id: string;
+  category: QuoteLineCategory;
+  label: string;
+  description?: string;
+  quantity: number;
+  unit: "hour" | "each" | "flat";
+  unitCost: number;
+  total: number;
+  internalNote?: string;
+  customerVisible: boolean;
+}
+
+export interface QuoteBreakdown {
+  id: string;
+  workOrderId: string;
+  status: "draft" | "ready" | "approved";
+  generatedBy: "advisor" | "manager" | "ai_draft";
+  customerSummary: string;
+  customerDetailAvailable: boolean;
+  internalNotes?: string;
+  lines: QuoteBreakdownLine[];
+  subtotal: number;
+  tax: number;
+  total: number;
+}
+
 export interface WorkOrder {
   id: string;
   number: string;
@@ -98,7 +201,7 @@ export interface WorkOrder {
   complaint: string;
   subsystems: Subsystem[];
   quoteAmount: number;
-  quoteScore: number; // 0-100
+  quoteBreakdown: QuoteBreakdown;
   laborHours: number;
   partsCost: number;
   etaIso: string;
@@ -115,6 +218,8 @@ export interface InventoryItem {
   reorderAt: number;
   unitCost: number;
   binLocation: string;
+  /** 0-100 mock usage rank. Items ≥ 70 are considered "Frequently used". */
+  usageRank: number;
 }
 
 export interface Tool {

@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getDataService } from "@/data/dataService";
 import { PageShell } from "@/components/page-shell";
 import { UrgencyBadge } from "@/components/urgency-badge";
 import { StatusChip } from "@/components/status-chip";
+import { BayBoard } from "@/components/bay-board";
+import { TicketDelegationPanel } from "@/components/ticket-delegation-panel";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Drawer, DrawerClose, DrawerPortal, DrawerOverlay } from "@/components/ui/drawer";
 import { Drawer as DrawerPrimitive } from "vaul";
@@ -85,27 +87,73 @@ function WoTable({ rows, vById, tById, emptyMessage }: WoTableProps) {
 
 function ManagerHome() {
   const svc = getDataService();
+  const qc = useQueryClient();
+
   const { data: wos = [] } = useQuery({ queryKey: ["wos"], queryFn: () => svc.getWorkOrders() });
   const { data: techs = [] } = useQuery({ queryKey: ["techs"], queryFn: () => svc.getTechnicians() });
   const { data: vehicles = [] } = useQuery({ queryKey: ["vehicles"], queryFn: () => svc.getVehicles() });
+  const { data: bays = [] } = useQuery({ queryKey: ["bays"], queryFn: () => svc.getBays() });
 
   const vById = new Map(vehicles.map((v) => [v.id, v]));
   const tById = new Map(techs.map((t) => [t.id, t]));
+  const woById = new Map(wos.map((w) => [w.id, w]));
 
   const working = wos.filter((w) => WORKING.has(w.status));
   const pending = wos.filter((w) => PENDING.has(w.status));
   const closed = wos.filter((w) => CLOSED.has(w.status));
 
+  // Only truly unassigned (no tech) pending tickets go to delegation queue
+  const unassignedPending = pending.filter((w) => !w.technicianId);
+
   const [selectedTech, setSelectedTech] = useState<Technician | null>(null);
+
+  async function handleDelegate(params: {
+    workOrderId: string;
+    bayId: string;
+    technicianId: string;
+  }) {
+    await svc.delegateTicket(params);
+    // Invalidate relevant queries so the UI refreshes
+    await qc.invalidateQueries({ queryKey: ["wos"] });
+    await qc.invalidateQueries({ queryKey: ["bays"] });
+    await qc.invalidateQueries({ queryKey: ["techs"] });
+  }
 
   return (
     <PageShell title="Floor view" description="Sandra Pratt · Foreman">
-      <Tabs defaultValue="working">
+      <Tabs defaultValue="bays">
         <TabsList>
+          <TabsTrigger value="bays">Bay board</TabsTrigger>
+          <TabsTrigger value="delegate">
+            Delegate
+            {unassignedPending.length > 0 && (
+              <span className="ml-1.5 inline-flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+                {unassignedPending.length}
+              </span>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="working">Working ({working.length})</TabsTrigger>
           <TabsTrigger value="pending">Pending ({pending.length})</TabsTrigger>
           <TabsTrigger value="closed">Closed ({closed.length})</TabsTrigger>
         </TabsList>
+
+        {/* Bay board tab */}
+        <TabsContent value="bays" className="mt-4">
+          <BayBoard bays={bays} techById={tById} woById={woById} />
+        </TabsContent>
+
+        {/* Delegation tab */}
+        <TabsContent value="delegate" className="mt-4">
+          <TicketDelegationPanel
+            pendingWOs={unassignedPending}
+            bays={bays}
+            technicians={techs}
+            vehicleById={vById}
+            onDelegate={handleDelegate}
+          />
+        </TabsContent>
+
+        {/* Work order list tabs */}
         <TabsContent value="working" className="mt-4">
           <WoTable
             rows={working}

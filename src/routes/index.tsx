@@ -34,7 +34,7 @@ export const Route = createFileRoute("/")({
 const FEATURES = [
   { icon: Wrench, title: "Tickets pinned to subsystems", body: "Every work order maps to the exact part of the car. No more free-text bay notes." },
   { icon: Sparkles, title: "AI urgency triage", body: "Intake gets graded the moment it lands. High-risk jobs surface before they slip." },
-  { icon: Gauge, title: "Quote reasonableness score", body: "Catch overpriced — and underpriced — quotes before they go to the customer." },
+  { icon: Gauge, title: "Quote cost breakdowns", body: "Show labor, parts, supplies, and fees clearly before a quote goes to the customer." },
   { icon: Smartphone, title: "Tech-first mobile flow", body: "Built for greasy hands. One thumb, one tap, no dropdown spelunking." },
   { icon: Users, title: "Customer portal", body: "Owners see what their car needs, not a wall of jargon. Approvals in two taps." },
   { icon: Building2, title: "Dealership ready", body: "Multi-bay, multi-tech, multi-make. Roll it out across a service department." },

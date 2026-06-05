@@ -24,7 +24,7 @@ export function RoleSwitcher() {
         navigate({ to: roleLandingRoute[next] });
       }}
     >
-      <SelectTrigger className="h-8 w-[170px] text-sm" aria-label="Switch role">
+      <SelectTrigger className="h-8 w-[170px] bg-background/80 text-sm shadow-sm" aria-label="Switch role">
         <span className="text-muted-foreground mr-1">View as</span>
         <SelectValue />
       </SelectTrigger>

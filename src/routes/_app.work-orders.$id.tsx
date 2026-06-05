@@ -6,6 +6,7 @@ import { PageShell, Stat } from "@/components/page-shell";
 import { Badge } from "@/components/ui/badge";
 import { VehicleViewer } from "@/components/vehicle-viewer";
 import { SubsystemDetailPanel } from "@/components/subsystem-detail-panel";
+import { QuoteBreakdownCard } from "@/components/quote-breakdown-card";
 import { useRole } from "@/app/RoleContext";
 import { useNotes } from "@/components/note-context";
 import { Switch } from "@/components/ui/switch";
@@ -68,6 +69,16 @@ function WorkOrderDetail() {
 
   // Pre-initialize tool-checked state from seed checkouts for THIS work order
   const checkedOutToolIds = new Set(toolCheckouts.filter((c) => c.workOrderId === wo.id).map((c) => c.toolId));
+  const quote = wo.quoteBreakdown;
+  const quoteParts = quote.lines
+    .filter((line) => line.category === "parts")
+    .reduce((sum, line) => sum + line.total, 0);
+  const quoteLabor = quote.lines
+    .filter((line) => line.category === "labor")
+    .reduce((sum, line) => sum + line.total, 0);
+  const quoteOther = quote.lines
+    .filter((line) => line.category !== "parts" && line.category !== "labor")
+    .reduce((sum, line) => sum + line.total, 0);
 
   return (
     <>
@@ -82,8 +93,15 @@ function WorkOrderDetail() {
         }
       >
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          <Stat label="Quote" value={`$${wo.quoteAmount.toFixed(2)}`} sub={`${wo.laborHours} hr labor · $${wo.partsCost.toFixed(2)} parts`} />
-          <Stat label="Quote score" value={`${wo.quoteScore}/100`} sub="reasonableness" />
+          <Stat label="Quote total" value={`$${quote.total.toFixed(2)}`} sub={quote.status === "draft" ? "pending review" : "ready for review"} accent="emerald" />
+          <Stat label="Labor" value={`$${quoteLabor.toFixed(2)}`} sub={`${wo.laborHours} hr estimated`} accent="emerald" />
+          <Stat label="Parts" value={`$${quoteParts.toFixed(2)}`} sub="required materials" accent="sky" />
+          <Stat label="Other" value={`$${quoteOther.toFixed(2)}`} sub="equipment, supplies, tax" accent="slate" />
+        </div>
+        <div className="mt-6">
+          <QuoteBreakdownCard quote={quote} />
+        </div>
+        <div className="mt-6 grid grid-cols-2 gap-3">
           <Stat label="ETA" value={(() => { const d = new Date(wo.etaIso); return isNaN(d.getTime()) ? "—" : d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }); })()} />
           <Stat label="Affected systems" value={String(affected.length)} sub={`of ${wo.subsystems.length}`} />
         </div>
@@ -222,6 +240,7 @@ function WorkOrderDetail() {
         open={selectedSubsystem !== null}
         onClose={() => setSelectedSubsystem(null)}
         subsystem={selectedSubsystem}
+        quote={quote}
       />
     </>
   );
