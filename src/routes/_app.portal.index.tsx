@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { MessageCircle } from "lucide-react";
 import { getDataService } from "@/data/dataService";
 import { PageShell } from "@/components/page-shell";
 import { VehicleViewer } from "@/components/vehicle-viewer";
 import { QuoteBreakdownCard } from "@/components/quote-breakdown-card";
 import { CustomerRecommendations } from "@/components/customer-recommendations";
 import { ServiceHistory } from "@/components/service-history";
+import { ContactButton } from "@/components/contact-button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { StatusChip } from "@/components/status-chip";
 import { useNotes } from "@/components/note-context";
@@ -30,26 +30,18 @@ function CustomerHome() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [vehicleTabs, setVehicleTabs] = useState<Record<string, string>>({});
   const handleToggle = (vehicleId: string) => setExpandedId((prev) => (prev === vehicleId ? null : vehicleId));
-  const openChat = () => {
-    const firstVehicleId = vehicles[0]?.id;
-    if (!firstVehicleId) return;
-    setExpandedId(firstVehicleId);
-    setVehicleTabs((prev) => ({ ...prev, [firstVehicleId]: "chat" }));
-  };
 
   return (
     <PageShell
       title="Your garage"
       description={maria ? `${maria.name} · ${vehicles.length} vehicles` : ""}
       actions={
-        <button
-          type="button"
-          onClick={openChat}
-          className="inline-flex h-9 items-center gap-2 rounded-lg border bg-background/80 px-3 text-sm font-medium shadow-sm hover:bg-accent"
-        >
-          <MessageCircle className="h-4 w-4" />
-          Chat with shop
-        </button>
+        <ContactButton
+          customerId="c_maria"
+          label="Message shop"
+          variant="outline"
+          size="md"
+        />
       }
     >
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -242,18 +234,21 @@ function VehicleExpansion({
         <TabsContent value="chat" className="mt-4">
           <div id="customer-chat" className="rounded-xl glass-card p-4">
             <div className="flex items-start gap-3">
-              <span className="grid h-10 w-10 place-items-center rounded-xl border border-sky-500/20 bg-sky-500/12 text-sky-600 dark:text-sky-300">
-                <MessageCircle className="h-4 w-4" />
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-sky-500/20 bg-sky-500/12 text-sky-600 dark:text-sky-300">
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               </span>
               <div>
                 <div className="text-sm font-semibold">Message Hialeah Auto Works</div>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Ask about active work, request a detailed quote, or follow up on recommendations.
-                  Full threaded messaging comes in the next chat phase.
                 </p>
-                <button className="mt-3 inline-flex h-9 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90">
-                  Start message
-                </button>
+                <ContactButton
+                  customerId="c_maria"
+                  label="Open messages"
+                  variant="default"
+                  size="md"
+                  className="mt-3"
+                />
               </div>
             </div>
           </div>

@@ -6,7 +6,6 @@ import type {
   Invoice,
   InventoryItem,
   Lead,
-  Message,
   MessageThread,
   Profile,
   QuoteBreakdown,
@@ -107,9 +106,6 @@ export interface DataService {
   getAiUrgencySuggestion(workOrderId: string): Promise<Urgency>;
   getRecommendedProcedure(subsystemKey: SubsystemKey): Promise<string>;
 }
-
-// Unused imports referenced for completeness (Message used in sendMessage return)
-export type { Message };
 
 let service: DataService = mockDataService;
 
