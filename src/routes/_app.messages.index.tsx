@@ -28,10 +28,10 @@ function roleCanStartDirectMessage(role: Role): boolean {
   return role !== "customer";
 }
 
-function threadIsVisibleForRole(thread: MessageThreadType, role: Role): boolean {
+function threadIsVisibleForRole(thread: MessageThreadType, role: Role, profileId: string): boolean {
   if (role === "customer") {
-    // Customers only see threads where they are a participant
-    return thread.participants.some((p) => p.role === "customer");
+    // Customers only see threads they are personally a participant in
+    return thread.participants.some((p) => p.profileId === profileId);
   }
   // All internal roles see all threads in the mock (real impl would filter by profile)
   return true;
@@ -150,6 +150,7 @@ function MessagesPage() {
   const search = useSearch({ from: "/_app/messages/" });
   const svc = getDataService();
   const queryClient = useQueryClient();
+  const me = PROFILE_BY_ROLE[role];
 
   const { data: allThreads = [], isLoading } = useQuery({
     queryKey: ["messageThreads"],
@@ -157,7 +158,7 @@ function MessagesPage() {
   });
 
   // Filter threads by role visibility
-  const visibleThreads = allThreads.filter((t) => threadIsVisibleForRole(t, role));
+  const visibleThreads = allThreads.filter((t) => threadIsVisibleForRole(t, role, me.profileId));
 
   // Search filter
   const [searchQuery, setSearchQuery] = useState("");
@@ -174,8 +175,6 @@ function MessagesPage() {
   const activeId = selectedId ?? (search.thread || filtered[0]?.id);
   const activeThread = filtered.find((t) => t.id === activeId) ?? filtered[0];
 
-  // Current user profile
-  const me = PROFILE_BY_ROLE[role];
 
   // sendMessage mutation
   const sendMutation = useMutation({
