@@ -285,6 +285,86 @@ export interface Task {
   done: boolean;
 }
 
+// ─── Service Advisor: New Concerns and Draft Work Orders ─────────────────────
+
+/**
+ * Source of the concern — matches locked decision:
+ *   portal_form   = submitted via customer portal
+ *   phone_intake  = logged by SA during a phone call
+ *   walk_in       = customer walked in without appointment
+ *   tech_flagged  = technician found additional issue during an active job
+ */
+export type ConcernSource =
+  | "portal_form"
+  | "phone_intake"
+  | "walk_in"
+  | "tech_flagged";
+
+export type ConcernStatus = "new" | "reviewed" | "drafted" | "dismissed";
+
+/**
+ * An AI-generated diagnostic suggestion the SA can accept or decline.
+ * Pre-generated for the demo; placeholder for real LLM call later.
+ */
+export interface AiDiagnosticSuggestion {
+  id: string;
+  label: string;
+  description: string;
+  /** Subsystem this suggestion targets, if applicable */
+  subsystemKey?: SubsystemKey;
+  /** Confidence hint shown in UI, e.g. "High confidence" */
+  confidenceLabel: string;
+}
+
+/**
+ * A customer concern or complaint not yet turned into a work order.
+ * Created by SA from portal, phone, walk-in, or tech-flagged source.
+ */
+export interface NewConcern {
+  id: string;
+  customerId: string;
+  vehicleId: string;
+  /** Who/what surfaced this concern */
+  source: ConcernSource;
+  /** Short description of the customer's complaint */
+  complaint: string;
+  urgency: Urgency;
+  status: ConcernStatus;
+  createdAtIso: string;
+  /** Pre-generated AI diagnostic options the SA can select */
+  aiDiagnosticSuggestions: AiDiagnosticSuggestion[];
+  /** SA's free-text diagnostic notes */
+  diagnosticNotes?: string;
+  /** IDs of AI suggestions the SA has selected */
+  selectedDiagnosticIds?: string[];
+  /** ID of draft work order created from this concern, if any */
+  draftWorkOrderId?: string;
+}
+
+/**
+ * A draft work order created by SA for foreman review.
+ * Lands in foreman delegation queue; not live until foreman assigns tech + bay.
+ * Customer is NOT notified until foreman confirms per locked decision.
+ */
+export interface DraftWorkOrder {
+  id: string;
+  concernId: string;
+  customerId: string;
+  vehicleId: string;
+  title: string;
+  complaint: string;
+  diagnosticNotes: string;
+  requestedDateIso: string;
+  urgency: Urgency;
+  /** SA's note to the foreman */
+  foremanNote: string;
+  /** Selected AI suggestion labels incorporated into the draft */
+  selectedDiagnostics: string[];
+  createdAtIso: string;
+  /** Foreman has not yet confirmed: status starts "pending_foreman" */
+  status: "pending_foreman" | "confirmed" | "rejected";
+}
+
 // ─── Messaging ────────────────────────────────────────────────────────────────
 
 /**

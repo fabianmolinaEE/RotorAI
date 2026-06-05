@@ -2,12 +2,14 @@ import type {
   Bay,
   Customer,
   CustomerRecommendation,
+  DraftWorkOrder,
   InventoryCategoryThreshold,
   Invoice,
   InventoryItem,
   Lead,
   Message,
   MessageThread,
+  NewConcern,
   Profile,
   ServiceHistoryRecord,
   Shop,
@@ -681,3 +683,137 @@ export const messageThreads: MessageThread[] = [
     hasUnread: true,
   },
 ];
+
+// ─── New Concerns ─────────────────────────────────────────────────────────────
+
+export const newConcerns: NewConcern[] = [
+  {
+    id: "concern_001",
+    customerId: "c_emma",
+    vehicleId: "v_mazda3_2022",
+    source: "portal_form",
+    complaint: "Hearing a clunking noise from the front when going over bumps. Started last week.",
+    urgency: "normal",
+    status: "new",
+    createdAtIso: isoOffset(-0.5),
+    aiDiagnosticSuggestions: [
+      {
+        id: "diag_001_a",
+        label: "Front sway bar end links",
+        description: "Worn or loose end links are a common source of clunking over bumps on this model year. Visual check + hand shake test recommended.",
+        subsystemKey: "suspension_front",
+        confidenceLabel: "High confidence",
+      },
+      {
+        id: "diag_001_b",
+        label: "Front strut top mounts",
+        description: "Upper strut bearings degrade over time and can produce metallic clunking, especially on cold mornings or sharp turns.",
+        subsystemKey: "suspension_front",
+        confidenceLabel: "Moderate confidence",
+      },
+      {
+        id: "diag_001_c",
+        label: "Front control arm bushings",
+        description: "Cracked or collapsed bushings produce clunking under load. Check for play with a pry bar during inspection.",
+        subsystemKey: "suspension_front",
+        confidenceLabel: "Moderate confidence",
+      },
+    ],
+  },
+  {
+    id: "concern_002",
+    customerId: "c_jamal",
+    vehicleId: "v_camry_2020",
+    source: "phone_intake",
+    complaint: "AC stopped blowing cold air. Works for a few minutes then blows warm. Has been getting worse over 2 weeks.",
+    urgency: "normal",
+    status: "new",
+    createdAtIso: isoOffset(-1.5),
+    aiDiagnosticSuggestions: [
+      {
+        id: "diag_002_a",
+        label: "Refrigerant low / leak",
+        description: "Gradual cooling loss with intermittent cold air is a classic sign of a slow refrigerant leak. UV dye leak test advised.",
+        subsystemKey: "hvac",
+        confidenceLabel: "High confidence",
+      },
+      {
+        id: "diag_002_b",
+        label: "Compressor clutch cycling issue",
+        description: "A faulty clutch relay or pressure switch can cause the compressor to disengage intermittently. Check with gauge set under load.",
+        subsystemKey: "hvac",
+        confidenceLabel: "Moderate confidence",
+      },
+      {
+        id: "diag_002_c",
+        label: "Condenser or evaporator blockage",
+        description: "Debris buildup on the condenser fins reduces heat exchange capacity. Inspect and clean before refrigerant recharge.",
+        subsystemKey: "hvac",
+        confidenceLabel: "Low confidence",
+      },
+    ],
+  },
+  {
+    id: "concern_003",
+    customerId: "c_diego",
+    vehicleId: "v_silverado_2017",
+    source: "tech_flagged",
+    complaint: "Tech note during oil change: noticed oil residue around valve cover gasket. Not actively dripping but should be addressed soon.",
+    urgency: "low",
+    status: "new",
+    createdAtIso: isoOffset(-2),
+    aiDiagnosticSuggestions: [
+      {
+        id: "diag_003_a",
+        label: "Valve cover gasket replacement",
+        description: "Seepage around the valve cover is expected wear at this mileage. Gasket and grommets replacement is a straightforward repair.",
+        subsystemKey: "engine",
+        confidenceLabel: "High confidence",
+      },
+      {
+        id: "diag_003_b",
+        label: "PCV valve inspection",
+        description: "A clogged PCV valve increases crankcase pressure and can accelerate gasket seepage. Inspect and replace as needed.",
+        subsystemKey: "engine",
+        confidenceLabel: "Moderate confidence",
+      },
+    ],
+  },
+  {
+    id: "concern_004",
+    customerId: "c_priya",
+    vehicleId: "v_rav4_2021",
+    source: "walk_in",
+    complaint: "Check engine light on. Also noticing slight hesitation when accelerating from a stop.",
+    urgency: "high",
+    status: "new",
+    createdAtIso: isoOffset(-3),
+    aiDiagnosticSuggestions: [
+      {
+        id: "diag_004_a",
+        label: "OBD-II scan — misfire codes",
+        description: "Acceleration hesitation + CEL is commonly caused by misfires (P0300–P0308). Pull codes first to direct the diagnosis.",
+        subsystemKey: "engine",
+        confidenceLabel: "High confidence",
+      },
+      {
+        id: "diag_004_b",
+        label: "Throttle body cleaning / sensor",
+        description: "Carbon buildup on the throttle body or a dirty MAF sensor can cause hesitation. Clean and re-evaluate.",
+        subsystemKey: "engine",
+        confidenceLabel: "Moderate confidence",
+      },
+      {
+        id: "diag_004_c",
+        label: "Spark plugs / ignition coils",
+        description: "Worn plugs or a failing coil on a hybrid can cause uneven firing under load. Check plug condition at current mileage.",
+        subsystemKey: "engine",
+        confidenceLabel: "Moderate confidence",
+      },
+    ],
+  },
+];
+
+// ─── Draft Work Orders ────────────────────────────────────────────────────────
+
+export const draftWorkOrders: DraftWorkOrder[] = [];
