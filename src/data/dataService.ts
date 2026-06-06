@@ -169,13 +169,27 @@ export interface DataService {
   getRecommendedProcedure(subsystemKey: SubsystemKey): Promise<string>;
 }
 
-let service: DataService = mockDataService;
+// ─── DataService initialization with USE_MOCK switch (D-01) ─────────────────
+//
+// Local dev: set USE_MOCK=true in .env.local → mockDataService (no Supabase needed)
+// Prod (Cloudflare Workers): omit USE_MOCK binding → supabaseDataService
+//
+// process.env is read at module initialization time here, which is acceptable
+// because TanStack Start/Vite evaluates this at server startup, not per-request.
+// The switch is static for the lifetime of the server instance.
+import { supabaseDataService } from "./supabaseDataService";
+
+const useMock =
+  typeof process !== "undefined" &&
+  (process.env.USE_MOCK === "true" || process.env.USE_MOCK === "1");
+
+let service: DataService = useMock ? mockDataService : supabaseDataService;
 
 export function getDataService(): DataService {
   return service;
 }
 
-/** Future hook for swapping to a real backend implementation. */
+/** Override the active DataService implementation (used in tests and dev tooling). */
 export function setDataService(impl: DataService) {
   service = impl;
 }
