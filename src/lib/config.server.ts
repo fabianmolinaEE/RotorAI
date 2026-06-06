@@ -24,3 +24,16 @@ export function getServerConfig() {
     //   stripeSecretKey: process.env.STRIPE_SECRET_KEY,
   };
 }
+
+/**
+ * Returns Supabase connection config from Workers env bindings.
+ * MUST be called inside a request handler — module-scope calls return undefined on Workers.
+ * Per D-02 and D-03: secrets are NOT VITE_-prefixed; never exposed to client bundle.
+ */
+export function getSupabaseConfig() {
+  return {
+    url: process.env.SUPABASE_URL ?? "",
+    anonKey: process.env.SUPABASE_ANON_KEY ?? "",
+    serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
+  };
+}
