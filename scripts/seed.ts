@@ -363,12 +363,20 @@ function mapForemanNote(n: (typeof foremanNotes)[0]) {
   };
 }
 
+// Additional technician profiles referenced in seed.ts technicians array
+// but absent from the profiles array (only p_tech/Luis is in the main profiles list).
+const additionalTechProfiles = [
+  { id: "p_tech_marcus", role: "technician", name: "Marcus Bell", email: "marcus@hialeahautoworks.com", avatar_color: "oklch(0.65 0.18 30)" },
+  { id: "p_tech_ana", role: "technician", name: "Ana Beltran", email: "ana@hialeahautoworks.com", avatar_color: "oklch(0.68 0.17 150)" },
+];
+
 async function seed() {
   console.log("Seeding Hialeah Auto Works demo data...\n");
 
   // Insert in FK-dependency order
   await upsert("shops", mapShop());
-  await upsert("profiles", profiles.map(mapProfile));
+  // Upsert main profiles first, then additional technician profiles not in seed.ts
+  await upsert("profiles", [...profiles.map(mapProfile), ...additionalTechProfiles]);
   await upsert("customers", customers.map(mapCustomer));
   await upsert("vehicles", vehicles.map(mapVehicle));
   await upsert("technicians", technicians.map(mapTechnician));
