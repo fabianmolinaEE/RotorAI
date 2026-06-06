@@ -556,7 +556,7 @@ const _delegateTicket = createServerFn({ method: "POST" })
     technicianId: z.string(),
   }))
   .handler(async ({ data }): Promise<Bay> => {
-    const db = await makeClient();
+    const db = await makeClient("service_role");
     const { error: bayErr } = await db.from("bays")
       .update({ status: "active", technician_id: data.technicianId, work_order_id: data.workOrderId })
       .eq("id", data.bayId);
@@ -626,7 +626,7 @@ const _sendMessage = createServerFn({ method: "POST" })
     aiDrafted: z.boolean().optional(),
   }))
   .handler(async ({ data }): Promise<MessageThread> => {
-    const db = await makeClient();
+    const db = await makeClient("service_role");
     const { data: thread, error: fetchErr } = await db.from("message_threads").select("*").eq("id", data.threadId).single();
     if (fetchErr) throw new Error(`sendMessage/fetch: ${fetchErr.message}`);
 
@@ -677,7 +677,7 @@ const _updateConcernDiagnostics = createServerFn({ method: "POST" })
     diagnosticNotes: z.string(),
   }))
   .handler(async ({ data }): Promise<NewConcern> => {
-    const db = await makeClient();
+    const db = await makeClient("service_role");
     const { data: updated, error } = await db.from("new_concerns")
       .update({
         selected_diagnostic_ids: data.selectedDiagnosticIds,
@@ -699,7 +699,7 @@ const _createDraftWorkOrder = createServerFn({ method: "POST" })
     foremanNote: z.string(),
   }))
   .handler(async ({ data }): Promise<DraftWorkOrder> => {
-    const db = await makeClient();
+    const db = await makeClient("service_role");
     const { data: concern, error: fetchErr } = await db.from("new_concerns").select("*").eq("id", data.concernId).single();
     if (fetchErr) throw new Error(`createDraftWorkOrder/fetch: ${fetchErr.message}`);
 
@@ -766,7 +766,7 @@ const _getActiveShift = createServerFn({ method: "POST" })
 const _clockIn = createServerFn({ method: "POST" })
   .inputValidator(z.object({ technicianId: z.string(), bayId: z.string().nullable() }))
   .handler(async ({ data }): Promise<TechnicianShift> => {
-    const db = await makeClient();
+    const db = await makeClient("service_role");
     const now = new Date().toISOString();
     const today = now.slice(0, 10);
     const shiftId = `shift_${crypto.randomUUID().slice(0, 8)}`;
@@ -793,7 +793,7 @@ const _clockIn = createServerFn({ method: "POST" })
 const _clockOut = createServerFn({ method: "POST" })
   .inputValidator(z.object({ technicianId: z.string() }))
   .handler(async ({ data }): Promise<TechnicianShift> => {
-    const db = await makeClient();
+    const db = await makeClient("service_role");
     const { data: rows, error: fetchErr } = await db.from("technician_shifts").select("*")
       .eq("technician_id", data.technicianId)
       .is("clocked_out_iso", null)
