@@ -42,7 +42,7 @@ export const listPendingUsers = createServerFn({ method: "GET" }).handler(
         created_at: u.created_at,
       }));
     return pending;
-  }
+  },
 );
 
 /**
@@ -55,7 +55,7 @@ export const approvePendingUser = createServerFn({ method: "POST" })
     z.object({
       userId: z.string().uuid(),
       role: roleSchema,
-    })
+    }),
   )
   .handler(async ({ data }) => {
     const { createClient } = await import("@supabase/supabase-js");

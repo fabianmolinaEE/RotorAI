@@ -1,4 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -14,6 +15,7 @@ import {
 import { useRole } from "@/app/RoleContext";
 import { navByRole } from "@/app/roleNav";
 import { cn } from "@/lib/utils";
+import { listPendingUsers } from "@/lib/api/auth.functions";
 
 export function AppSidebar() {
   const { role } = useRole();
@@ -21,6 +23,14 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const items = navByRole[role];
+  const [pendingCount, setPendingCount] = useState(0);
+
+  // Fetch pending user count for sidebar badge — owner role only
+  useEffect(() => {
+    if (role !== "owner") return;
+    void listPendingUsers().then((users) => setPendingCount(users.length));
+  }, [role]);
+
   const accentClasses = [
     "text-sky-600 bg-sky-500/12 dark:text-sky-300 dark:bg-sky-400/12",
     "text-blue-600 bg-blue-500/12 dark:text-blue-300 dark:bg-blue-400/12",
@@ -38,7 +48,9 @@ export function AppSidebar() {
           </div>
           {!collapsed && (
             <div className="leading-tight">
-              <div className="text-sm font-semibold tracking-tight">Hialeah</div>
+              <div className="text-sm font-semibold tracking-tight">
+                Hialeah
+              </div>
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
                 Auto Works
               </div>
@@ -58,7 +70,10 @@ export function AppSidebar() {
                 return (
                   <SidebarMenuItem key={`${item.title}-${item.url}`}>
                     <SidebarMenuButton asChild isActive={active}>
-                      <Link to={item.url} className="group flex items-center gap-2">
+                      <Link
+                        to={item.url}
+                        className="group flex items-center gap-2"
+                      >
                         <span
                           className={cn(
                             "grid h-6 w-6 shrink-0 place-items-center rounded-md transition-colors",
@@ -70,6 +85,17 @@ export function AppSidebar() {
                           <item.icon className="h-3.5 w-3.5" />
                         </span>
                         {!collapsed && <span>{item.title}</span>}
+                        {/* Pending badge — only for Users item when expanded and count > 0 */}
+                        {!collapsed &&
+                          item.title === "Users" &&
+                          pendingCount > 0 && (
+                            <span
+                              className="ml-auto h-4 min-w-4 rounded-full bg-primary px-1 text-[10px] font-normal tabular-nums text-primary-foreground"
+                              aria-label={`${pendingCount} pending approvals`}
+                            >
+                              {pendingCount}
+                            </span>
+                          )}
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
