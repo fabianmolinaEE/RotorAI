@@ -14,7 +14,7 @@ let _client: SupabaseClient | null = null;
 export function getSupabaseBrowserClient(): SupabaseClient {
   if (!SUPABASE_URL) {
     throw new Error(
-      "VITE_SUPABASE_URL is not set. Add it to .env.local (copy from SUPABASE_URL value)."
+      "VITE_SUPABASE_URL is not set. Add it to .env.local (copy from SUPABASE_URL value).",
     );
   }
   if (!_client) {
