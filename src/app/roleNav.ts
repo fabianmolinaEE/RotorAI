@@ -9,6 +9,7 @@ import {
   CalendarClock,
   Sparkles,
   MessageSquare,
+  UserCheck,
   type LucideIcon,
 } from "lucide-react";
 import type { Role } from "@/data/types";
@@ -27,6 +28,7 @@ const ownerNav: NavItem[] = [
   { title: "Inventory", url: "/inventory", icon: Package },
   { title: "Invoices", url: "/invoices", icon: Receipt },
   { title: "Messages", url: "/messages", icon: MessageSquare },
+  { title: "Users", url: "/admin/users", icon: UserCheck },
 ];
 
 const managerNav: NavItem[] = [
