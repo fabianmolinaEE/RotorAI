@@ -70,7 +70,7 @@ function Landing() {
           <div className="ml-auto flex items-center gap-2">
             <Link to="/owner" className="hidden text-sm text-muted-foreground hover:text-foreground md:inline">Sign in</Link>
             <Link
-              to="/owner"
+              to="/demo"
               className="inline-flex h-8 items-center gap-1.5 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:opacity-90"
             >
               Open demo <ArrowRight className="h-3.5 w-3.5" />
@@ -105,7 +105,7 @@ function Landing() {
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
-                to="/owner"
+                to="/demo"
                 className="inline-flex h-10 items-center gap-2 rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground hover:opacity-90"
               >
                 Open the demo <ArrowRight className="h-4 w-4" />
@@ -210,7 +210,7 @@ function Landing() {
             real-shaped quotes, every role click-through.
           </p>
           <Link
-            to="/owner"
+            to="/demo"
             className="mt-8 inline-flex h-11 items-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground hover:opacity-90"
           >
             Open the demo <ArrowRight className="h-4 w-4" />
