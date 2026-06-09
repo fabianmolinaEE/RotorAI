@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import type { Role } from "@/data/types";
 
 interface RoleCtx {
@@ -8,16 +8,20 @@ interface RoleCtx {
 
 const Ctx = createContext<RoleCtx | null>(null);
 const KEY = "haw.role";
+const VALID: Role[] = ["owner", "manager", "service_advisor", "technician", "customer"];
+
+function readStoredRole(): Role {
+  try {
+    const stored = localStorage.getItem(KEY) as Role | null;
+    if (stored && VALID.includes(stored)) return stored;
+  } catch {
+    /* SSR or private browsing */
+  }
+  return "owner";
+}
 
 export function RoleProvider({ children }: { children: ReactNode }) {
-  const [role, setRoleState] = useState<Role>("owner");
-
-  useEffect(() => {
-    const stored = (typeof localStorage !== "undefined" && localStorage.getItem(KEY)) as Role | null;
-    if (stored === "owner" || stored === "manager" || stored === "service_advisor" || stored === "technician" || stored === "customer") {
-      setRoleState(stored);
-    }
-  }, []);
+  const [role, setRoleState] = useState<Role>(readStoredRole);
 
   const setRole = (r: Role) => {
     setRoleState(r);

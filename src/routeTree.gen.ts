@@ -9,11 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AppRouteImport } from './routes/_app'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as PendingRouteImport } from './routes/pending'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppWorkOrdersIndexRouteImport } from './routes/_app.work-orders.index'
 import { Route as AppVehiclesIndexRouteImport } from './routes/_app.vehicles.index'
 import { Route as AppTechIndexRouteImport } from './routes/_app.tech.index'
@@ -26,7 +26,23 @@ import { Route as AppInvoicesIndexRouteImport } from './routes/_app.invoices.ind
 import { Route as AppInventoryIndexRouteImport } from './routes/_app.inventory.index'
 import { Route as AppCustomersIndexRouteImport } from './routes/_app.customers.index'
 import { Route as AppWorkOrdersIdRouteImport } from './routes/_app.work-orders.$id'
+import { Route as AppAdminUsersRouteImport } from './routes/_app.admin.users'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PendingRoute = PendingRouteImport.update({
+  id: '/pending',
+  path: '/pending',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppRoute = AppRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
@@ -96,12 +112,18 @@ const AppWorkOrdersIdRoute = AppWorkOrdersIdRouteImport.update({
   path: '/work-orders/$id',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminUsersRoute = AppAdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/signup': typeof SignupRoute
   '/pending': typeof PendingRoute
+  '/signup': typeof SignupRoute
+  '/admin/users': typeof AppAdminUsersRoute
   '/work-orders/$id': typeof AppWorkOrdersIdRoute
   '/customers/': typeof AppCustomersIndexRoute
   '/inventory/': typeof AppInventoryIndexRoute
@@ -118,8 +140,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/signup': typeof SignupRoute
   '/pending': typeof PendingRoute
+  '/signup': typeof SignupRoute
+  '/admin/users': typeof AppAdminUsersRoute
   '/work-orders/$id': typeof AppWorkOrdersIdRoute
   '/customers': typeof AppCustomersIndexRoute
   '/inventory': typeof AppInventoryIndexRoute
@@ -136,10 +159,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/signup': typeof SignupRoute
-  '/pending': typeof PendingRoute
   '/_app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/pending': typeof PendingRoute
+  '/signup': typeof SignupRoute
+  '/_app/admin/users': typeof AppAdminUsersRoute
   '/_app/work-orders/$id': typeof AppWorkOrdersIdRoute
   '/_app/customers/': typeof AppCustomersIndexRoute
   '/_app/inventory/': typeof AppInventoryIndexRoute
@@ -158,8 +182,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
-    | '/signup'
     | '/pending'
+    | '/signup'
+    | '/admin/users'
     | '/work-orders/$id'
     | '/customers/'
     | '/inventory/'
@@ -176,8 +201,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
-    | '/signup'
     | '/pending'
+    | '/signup'
+    | '/admin/users'
     | '/work-orders/$id'
     | '/customers'
     | '/inventory'
@@ -193,10 +219,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/login'
-    | '/signup'
-    | '/pending'
     | '/_app'
+    | '/login'
+    | '/pending'
+    | '/signup'
+    | '/_app/admin/users'
     | '/_app/work-orders/$id'
     | '/_app/customers/'
     | '/_app/inventory/'
@@ -215,33 +242,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
-  SignupRoute: typeof SignupRoute
   PendingRoute: typeof PendingRoute
+  SignupRoute: typeof SignupRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_app': {
-      id: '/_app'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AppRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -254,6 +260,27 @@ declare module '@tanstack/react-router' {
       path: '/pending'
       fullPath: '/pending'
       preLoaderRoute: typeof PendingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/work-orders/': {
@@ -340,10 +367,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWorkOrdersIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/admin/users': {
+      id: '/_app/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AppAdminUsersRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppAdminUsersRoute: typeof AppAdminUsersRoute
   AppWorkOrdersIdRoute: typeof AppWorkOrdersIdRoute
   AppCustomersIndexRoute: typeof AppCustomersIndexRoute
   AppInventoryIndexRoute: typeof AppInventoryIndexRoute
@@ -359,6 +394,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAdminUsersRoute: AppAdminUsersRoute,
   AppWorkOrdersIdRoute: AppWorkOrdersIdRoute,
   AppCustomersIndexRoute: AppCustomersIndexRoute,
   AppInventoryIndexRoute: AppInventoryIndexRoute,
@@ -375,28 +411,12 @@ const AppRouteChildren: AppRouteChildren = {
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PendingRoute = PendingRouteImport.update({
-  id: '/pending',
-  path: '/pending',
-  getParentRoute: () => rootRouteImport,
-} as any)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
-  SignupRoute: SignupRoute,
   PendingRoute: PendingRoute,
+  SignupRoute: SignupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
