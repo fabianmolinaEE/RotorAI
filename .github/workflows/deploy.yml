@@ -24,6 +24,8 @@ jobs:
 
       - name: Build
         run: bun run build
+        env:
+          VITE_USE_MOCK: "true"
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
