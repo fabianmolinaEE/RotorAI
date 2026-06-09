@@ -10,6 +10,7 @@ import {
   Building2,
 } from "lucide-react";
 import { getDataService } from "@/data/dataService";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -68,6 +69,7 @@ function Landing() {
             <a href="#roles" className="hover:text-foreground">Roles</a>
           </nav>
           <div className="ml-auto flex items-center gap-2">
+            <ThemeToggle />
             <Link to="/owner" className="hidden text-sm text-muted-foreground hover:text-foreground md:inline">Sign in</Link>
             <Link
               to="/demo"
